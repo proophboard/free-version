@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "https://free.prooph-board.com/free-version/precache-manifest.aed7009a0a2aad81d45f6f9cbaace8d5.js"
+  "https://free.prooph-board.com/precache-manifest.59357104c2eddf4cfed07d857016033f.js"
 );
 
 workbox.clientsClaim();
@@ -28,7 +28,7 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerNavigationRoute("https://free.prooph-board.com/free-version/index.html", {
+workbox.routing.registerNavigationRoute("https://free.prooph-board.com/index.html", {
   
   blacklist: [/^\/_/,/\/[^\/]+\.[^\/]+$/],
 });
