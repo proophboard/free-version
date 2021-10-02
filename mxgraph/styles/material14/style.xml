@@ -1,0 +1,383 @@
+<mxStylesheet>
+    <add as="graph">
+        <add as="gridStyle" value="dotted" />
+        <add as="gridSize" value="16" />
+        <add as="minGridSize" value="4" />
+        <add as="gridSteps" value="4" />
+        <add as="gridColor" value="#eeeeee" />
+        <add as="bgColor" value="#ffffff" />
+    </add>
+    <add as="defaultVertex">
+        <add as="shape" value="label"/>
+        <add as="fontStyle" value="0" />
+        <add as="fontColor" value="#414141"/>
+        <add as="perimeter" value="rectanglePerimeter"/>
+        <add as="fontSize" value="18"/>
+        <add as="fontFamily" value="Roboto"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="fillColor" value="#ffffff"/>
+        <add as="strokeColor" value="none"/>
+        <add as="spacing" value="10" />
+        <add as="whiteSpace" value="wrap" />
+        <add as="html" value="1" />
+    </add>
+    <add as="defaultEdge">
+        <add as="shape" value="connector"/>
+        <add as="edgeStyle" value="orthogonalEdgeStyle"/>
+        <add as="entryX" value="100"/>
+        <add as="entryPerimeter" value="1"/>
+        <add as="rounded" value="1"/>
+        <add as="jettySize" value="auto"/>
+        <add as="orthogonalLoop" value="1"/>
+        <add as="strokeWidth" value="2"/>
+        <add as="strokeColor" value="#858585"/>
+        <add as="labelBackgroundColor" value="none"/>
+        <add as="endArrow" value="open"/>
+        <add as="perimeterSpacing" value="5"/>
+        <add as="fontSize" value="11"/>
+        <add as="fontFamily" value="Gaegu"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="spacing" value="10" />
+        <add as="overflow" value="visible" />
+    </add>
+    <add as="squareSticky">
+        <add as="width" value="160"/>
+        <add as="height" value="100"/>
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="rectSticky">
+        <add as="width" value="160"/>
+        <add as="height" value="100"/>
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="smallSticky">
+        <add as="width" value="70"/>
+        <add as="height" value="90"/>
+        <add as="minWidth" value="70" />
+        <add as="minHeight" value="90" />
+    </add>
+    <add as="rhombusSticky">
+        <add as="width" value="160"/>
+        <add as="height" value="100"/>
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="event">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#FF9F4B"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="eventThumb">
+        <add as="fillColor" value="#FF9F4B"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="command">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#26C0E7"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="commandThumb">
+        <add as="fillColor" value="#26C0E7"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="role">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#f7f727"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="fontSize" value="16"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="70" />
+        <add as="minHeight" value="90" />
+    </add>
+    <add as="roleThumb">
+        <add as="fillColor" value="#f7f727"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="projection">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#3acbc0"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="projectionThumb">
+        <add as="fillColor" value="#3acbc0"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="aggregate">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#F5E339"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="aggregateThumb">
+        <add as="fillColor" value="#F5E339"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="document">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#73dd8e"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="documentThumb">
+        <add as="fillColor" value="#73dd8e"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="policy">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#EABFF1"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="policyThumb">
+        <add as="fillColor" value="#EABFF1"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="hotSpot">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#f31d30"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="hotSpotThumb">
+        <add as="fillColor" value="#f31d30"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="externalSystem">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#ec98ac"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="externalSystemThumb">
+        <add as="fillColor" value="#ec98ac"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="ui">
+        <add as="shape" value="card"/>
+        <add as="strokeColor" value="#000000"/>
+        <add as="strokeOpacity" value="50"/>
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="0"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+        <add as="minWidth" value="160" />
+        <add as="minHeight" value="100" />
+    </add>
+    <add as="uiThumb">
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="feature">
+        <add as="spacingTop" value="20"/>
+        <add as="connectable" value="0"/>
+        <add as="fillColor" value="#cfcfcf"/>
+        <add as="fillOpacity" value="40"/>
+        <add as="container" value="1"/>
+        <add as="labelPosition" value="center"/>
+        <add as="verticalLabelPosition" value="middle"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="fontFamily" value="Roboto"/>
+        <add as="fontSize" value="36"/>
+        <add as="fontStyle" value="1" />
+        <add as="strokeColor" value="none"/>
+        <add as="alternateVerticalAlign" value="middle"/>
+        <add as="alternateFontSize" value="56"/>
+        <add as="spacing" value="10" />
+        <add as="overflow" value="visible" />
+    </add>
+    <add as="boundedContext">
+        <add as="spacingTop" value="50"/>
+        <add as="connectable" value="0"/>
+        <add as="fillColor" value="#a2a2a2"/>
+        <add as="fontColor" value="#414141"/>
+        <add as="fillOpacity" value="10"/>
+        <add as="glass" value="1"/>
+        <add as="container" value="1"/>
+        <add as="labelPosition" value="center"/>
+        <add as="verticalLabelPosition" value="middle"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="fontFamily" value="Roboto"/>
+        <add as="fontSize" value="78"/>
+        <add as="fontStyle" value="1" />
+        <add as="strokeColor" value="none"/>
+        <add as="alternateVerticalAlign" value="middle"/>
+        <add as="alternateFontSize" value="112"/>
+        <add as="spacing" value="10" />
+        <add as="overflow" value="visible" />
+    </add>
+    <add as="freeText">
+        <add as="fillColor" value="none"/>
+        <add as="gradientColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="html" value="1"/>
+        <add as="whiteSpace" value="wrap" />
+        <add as="rounded" value="0"/>
+        <add as="fontSize" value="14"/>
+        <add as="spacing" value="30"/>
+        <add as="overflow" value="width" />
+    </add>
+    <add as="freeTextThumb">
+        <add as="shape" value="image"/>
+        <add as="labelBackgroundColor" value="none"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="verticalLabelPosition" value="bottom"/>
+        <add as="image" value="data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJhbGlnbi1jZW50ZXIiIGNsYXNzPSJzdmctaW5saW5lLS1mYSBmYS1hbGlnbi1jZW50ZXIgZmEtdy0xNCIgcm9sZT0iaW1nIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik00MzIgMTYwSDE2YTE2IDE2IDAgMCAwLTE2IDE2djMyYTE2IDE2IDAgMCAwIDE2IDE2aDQxNmExNiAxNiAwIDAgMCAxNi0xNnYtMzJhMTYgMTYgMCAwIDAtMTYtMTZ6bTAgMjU2SDE2YTE2IDE2IDAgMCAwLTE2IDE2djMyYTE2IDE2IDAgMCAwIDE2IDE2aDQxNmExNiAxNiAwIDAgMCAxNi0xNnYtMzJhMTYgMTYgMCAwIDAtMTYtMTZ6TTEwOC4xIDk2aDIzMS44MUExMi4wOSAxMi4wOSAwIDAgMCAzNTIgODMuOVY0NC4wOUExMi4wOSAxMi4wOSAwIDAgMCAzMzkuOTEgMzJIMTA4LjFBMTIuMDkgMTIuMDkgMCAwIDAgOTYgNDQuMDlWODMuOUExMi4xIDEyLjEgMCAwIDAgMTA4LjEgOTZ6bTIzMS44MSAyNTZBMTIuMDkgMTIuMDkgMCAwIDAgMzUyIDMzOS45di0zOS44MUExMi4wOSAxMi4wOSAwIDAgMCAzMzkuOTEgMjg4SDEwOC4xQTEyLjA5IDEyLjA5IDAgMCAwIDk2IDMwMC4wOXYzOS44MWExMi4xIDEyLjEgMCAwIDAgMTIuMSAxMi4xeiI+PC9wYXRoPjwvc3ZnPg=="/>
+        <add as="spacing" value="0" />
+    </add>
+    <add as="textCard">
+        <add as="align" value="left"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="whiteSpace" value="wrap" />
+        <add as="gradientColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="fillColor" value="#FFDFD3"/>
+        <add as="fillOpacity" value="50"/>
+        <add as="spacing" value="30"/>
+        <add as="overflow" value="hidden"/>
+        <add as="rounded" value="0"/>
+    </add>
+    <add as="label">
+        <add as="fontStyle" value="1"/>
+        <add as="align" value="left"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="spacing" value="2"/>
+        <add as="spacingLeft" value="52"/>
+        <add as="imageWidth" value="42"/>
+        <add as="imageHeight" value="42"/>
+        <add as="rounded" value="1"/>
+        <add as="spacing" value="0" />
+        <add as="overflow" value="width" />
+    </add>
+    <add as="group">
+        <add as="verticalAlign" value="top"/>
+        <add as="fillColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="gradientColor" value="none"/>
+        <add as="pointerEvents" value="0"/>
+    </add>
+    <add as="ellipse">
+        <add as="shape" value="ellipse"/>
+        <add as="perimeter" value="ellipsePerimeter"/>
+    </add>
+    <add as="rhombus">
+        <add as="shape" value="rhombus"/>
+        <add as="perimeter" value="rhombusPerimeter"/>
+    </add>
+    <add as="triangle">
+        <add as="shape" value="triangle"/>
+        <add as="perimeter" value="trianglePerimeter"/>
+    </add>
+    <add as="line">
+        <add as="shape" value="line"/>
+        <add as="strokeWidth" value="4"/>
+        <add as="labelBackgroundColor" value="#ffffff"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="spacingTop" value="8"/>
+    </add>
+    <add as="image">
+        <add as="shape" value="image"/>
+        <add as="labelBackgroundColor" value="none"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="verticalLabelPosition" value="bottom"/>
+        <add as="image" value="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjNTY1NjU2IiBkPSJNNDY0IDY0SDQ4QzIxLjQ5IDY0IDAgODUuNDkgMCAxMTJ2Mjg4YzAgMjYuNTEgMjEuNDkgNDggNDggNDhoNDE2YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWMTEyYzAtMjYuNTEtMjEuNDktNDgtNDgtNDh6bS02IDMzNkg1NGE2IDYgMCAwIDEtNi02VjExOGE2IDYgMCAwIDEgNi02aDQwNGE2IDYgMCAwIDEgNiA2djI3NmE2IDYgMCAwIDEtNiA2ek0xMjggMTUyYy0yMi4wOTEgMC00MCAxNy45MDktNDAgNDBzMTcuOTA5IDQwIDQwIDQwIDQwLTE3LjkwOSA0MC00MC0xNy45MDktNDAtNDAtNDB6TTk2IDM1MmgzMjB2LTgwbC04Ny41MTUtODcuNTE1Yy00LjY4Ni00LjY4Ni0xMi4yODQtNC42ODYtMTYuOTcxIDBMMTkyIDMwNGwtMzkuNTE1LTM5LjUxNWMtNC42ODYtNC42ODYtMTIuMjg0LTQuNjg2LTE2Ljk3MSAwTDk2IDMwNHY0OHoiIGNsYXNzPSIiPjwvcGF0aD48L3N2Zz4="/>
+        <add as="spacing" value="0" />
+        <add as="noLabel" value="1" />
+        <add as="imageAspect" value="1" />
+        <add as="aspect" value="1" />
+    </add>
+    <add as="icon">
+        <add as="shape" value="image"/>
+        <add as="labelBackgroundColor" value="none"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="verticalLabelPosition" value="bottom"/>
+        <add as="image" value="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjNTY1NjU2IiBkPSJNNDYyLjMgNjIuNkM0MDcuNSAxNS45IDMyNiAyNC4zIDI3NS43IDc2LjJMMjU2IDk2LjVsLTE5LjctMjAuM0MxODYuMSAyNC4zIDEwNC41IDE1LjkgNDkuNyA2Mi42Yy02Mi44IDUzLjYtNjYuMSAxNDkuOC05LjkgMjA3LjlsMTkzLjUgMTk5LjhjMTIuNSAxMi45IDMyLjggMTIuOSA0NS4zIDBsMTkzLjUtMTk5LjhjNTYuMy01OC4xIDUzLTE1NC4zLTkuOC0yMDcuOXoiIGNsYXNzPSIiPjwvcGF0aD48L3N2Zz4="/>
+        <add as="spacing" value="0" />
+    </add>
+    <add as="roundImage" extend="image">
+        <add as="perimeter" value="ellipsePerimeter"/>
+    </add>
+    <add as="rhombusImage" extend="image">
+        <add as="perimeter" value="rhombusPerimeter"/>
+    </add>
+    <add as="arrow">
+        <add as="shape" value="arrow"/>
+        <add as="edgeStyle" value="none"/>
+        <add as="fillColor" value="#ffffff"/>
+    </add>
+</mxStylesheet>

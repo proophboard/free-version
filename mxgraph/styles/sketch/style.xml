@@ -1,0 +1,221 @@
+<mxStylesheet>
+    <add as="graph">
+        <add as="gridStyle" value="dotted" />
+        <add as="gridSize" value="4" />
+        <add as="minGridSize" value="4" />
+        <add as="gridSteps" value="4" />
+        <add as="gridColor" value="#eeeeee" />
+        <add as="bgColor" value="#ffffff" />
+    </add>
+    <add as="defaultVertex">
+        <add as="shape" value="label"/>
+        <add as="fontStyle" value="1" />
+        <add as="perimeter" value="rectanglePerimeter"/>
+        <add as="fontSize" value="18"/>
+        <add as="fontFamily" value="Gaegu"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="fillColor" value="#ffffff"/>
+        <add as="strokeColor" value="none"/>
+        <add as="fontColor" value="#000000"/>
+        <add as="spacing" value="10" />
+        <add as="whiteSpace" value="wrap" />
+        <add as="html" value="1" />
+    </add>
+    <add as="defaultEdge">
+        <add as="shape" value="connector"/>
+        <add as="edgeStyle" value="orthogonalEdgeStyle"/>
+        <add as="rounded" value="1"/>
+        <add as="jettySize" value="auto"/>
+        <add as="orthogonalLoop" value="1"/>
+        <add as="dashed" value="1"/>
+        <add as="dashedPattern" value="4 2"/>
+        <add as="comic" value="1"/>
+        <add as="strokeWidth" value="2"/>
+        <add as="strokeColor" value="#919191"/>
+        <add as="labelBackgroundColor" value="#ffffff"/>
+        <add as="endArrow" value="open"/>
+        <add as="fontSize" value="11"/>
+        <add as="fontFamily" value="Gaegu"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+    </add>
+    <add as="squareSticky">
+        <add as="width" value="100"/>
+        <add as="height" value="100"/>
+    </add>
+    <add as="rectSticky">
+        <add as="width" value="160"/>
+        <add as="height" value="100"/>
+    </add>
+    <add as="smallSticky">
+        <add as="width" value="60"/>
+        <add as="height" value="85"/>
+    </add>
+    <add as="rhombusSticky">
+        <add as="width" value="140"/>
+        <add as="height" value="140"/>
+    </add>
+    <add as="event">
+        <add as="fillColor" value="#FF9F4B"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="command">
+        <add as="fillColor" value="#26C0E7"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="role">
+        <add as="fillColor" value="#F5E339"/>
+        <add as="shadow" value="1"/>
+        <add as="fontSize" value="16"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="projection">
+        <add as="fillColor" value="#74CBC5"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="aggregate">
+        <add as="fillColor" value="#FFF9B2"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="document">
+        <add as="fillColor" value="#CDDD7A"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="policy">
+        <add as="fillColor" value="#EABFF1"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="hotSpot">
+        <add as="shape" value="rhombus" />
+        <add as="perimeter" value="rhombusPerimeter"/>
+        <add as="fillColor" value="#F34894"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="externalSystem">
+        <add as="fillColor" value="#ECA2C4"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="ui">
+        <add as="fillColor" value="#FAFAFA"/>
+        <add as="shadow" value="1"/>
+        <add as="aspect" value="fixed" />
+    </add>
+    <add as="feature">
+        <add as="connectable" value="0"/>
+        <add as="dashed" value="1"/>
+        <add as="dashPattern" value="6 4"/>
+        <add as="comic" value="1"/>
+        <add as="fillColor" value="none"/>
+        <add as="container" value="1"/>
+        <add as="labelPosition" value="center"/>
+        <add as="verticalLabelPosition" value="middle"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="fontSize" value="24"/>
+        <add as="strokeColor" value="#919191"/>
+        <add as="strokeWidth" value="3"/>
+        <add as="alternateVerticalAlign" value="middle"/>
+        <add as="alternateFontSize" value="48"/>
+    </add>
+    <add as="boundedContext">
+        <add as="connectable" value="0"/>
+        <add as="rounded" value="1"/>
+        <add as="dashed" value="0"/>
+        <add as="comic" value="1"/>
+        <add as="fillColor" value="none"/>
+        <add as="container" value="1"/>
+        <add as="labelPosition" value="center"/>
+        <add as="verticalLabelPosition" value="middle"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="fontSize" value="48"/>
+        <add as="strokeColor" value="#919191"/>
+        <add as="strokeWidth" value="4"/>
+        <add as="alternateVerticalAlign" value="middle"/>
+        <add as="alternateFontSize" value="96"/>
+    </add>
+    <add as="freeText">
+        <add as="fillColor" value="none"/>
+        <add as="gradientColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="align" value="center"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="html" value="1"/>
+        <add as="whiteSpace" value="wrap" />
+        <add as="rounded" value="0"/>
+        <add as="fontSize" value="14"/>
+    </add>
+    <add as="textCard">
+        <add as="align" value="left"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="whiteSpace" value="wrap" />
+        <add as="gradientColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="fillColor" value="#FFDFD3"/>
+        <add as="spacing" value="5"/>
+        <add as="overflow" value="hidden"/>
+        <add as="rounded" value="0"/>
+    </add>
+    <add as="label">
+        <add as="fontStyle" value="1"/>
+        <add as="align" value="left"/>
+        <add as="verticalAlign" value="middle"/>
+        <add as="spacing" value="2"/>
+        <add as="spacingLeft" value="52"/>
+        <add as="imageWidth" value="42"/>
+        <add as="imageHeight" value="42"/>
+        <add as="rounded" value="1"/>
+    </add>
+    <add as="group">
+        <add as="verticalAlign" value="top"/>
+        <add as="fillColor" value="none"/>
+        <add as="strokeColor" value="none"/>
+        <add as="gradientColor" value="none"/>
+        <add as="pointerEvents" value="0"/>
+    </add>
+    <add as="ellipse">
+        <add as="shape" value="ellipse"/>
+        <add as="perimeter" value="ellipsePerimeter"/>
+    </add>
+    <add as="rhombus">
+        <add as="shape" value="rhombus"/>
+        <add as="perimeter" value="rhombusPerimeter"/>
+    </add>
+    <add as="triangle">
+        <add as="shape" value="triangle"/>
+        <add as="perimeter" value="trianglePerimeter"/>
+    </add>
+    <add as="line">
+        <add as="shape" value="line"/>
+        <add as="strokeWidth" value="4"/>
+        <add as="labelBackgroundColor" value="#ffffff"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="spacingTop" value="8"/>
+    </add>
+    <add as="image">
+        <add as="shape" value="image"/>
+        <add as="labelBackgroundColor" value="white"/>
+        <add as="verticalAlign" value="top"/>
+        <add as="verticalLabelPosition" value="bottom"/>
+    </add>
+    <add as="roundImage" extend="image">
+        <add as="perimeter" value="ellipsePerimeter"/>
+    </add>
+    <add as="rhombusImage" extend="image">
+        <add as="perimeter" value="rhombusPerimeter"/>
+    </add>
+    <add as="arrow">
+        <add as="shape" value="arrow"/>
+        <add as="edgeStyle" value="none"/>
+        <add as="fillColor" value="#ffffff"/>
+    </add>
+</mxStylesheet>

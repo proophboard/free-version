@@ -1,0 +1,8 @@
+{
+  "realm": "proophboard",
+  "auth-server-url": "https://ee.local/auth",
+  "ssl-required": "external",
+  "resource": "inspectio",
+  "public-client": true,
+  "confidential-port": 0
+}
