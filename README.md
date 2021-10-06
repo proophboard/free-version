@@ -2,7 +2,7 @@
 
 Use prooph board for free! 
 
-[Open Free Version](https://free.prooph-board.com/free-version)  (no account required)
+[Open Free Version](https://free.prooph-board.com/)  (no account required)
 
 ## Included
 - Event Storming Stickies
