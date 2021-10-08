@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "6b634a5f5bc41d791294",
+    "revision": "655e75957f0719fc8e0e",
     "url": "https://free.prooph-board.com/static/css/main.d22dbe96.chunk.css"
   },
   {
-    "revision": "6b634a5f5bc41d791294",
-    "url": "https://free.prooph-board.com/static/js/main.6b634a5f.chunk.js"
+    "revision": "655e75957f0719fc8e0e",
+    "url": "https://free.prooph-board.com/static/js/main.655e7595.chunk.js"
   },
   {
     "revision": "8e970fdf7c532ab6a708",
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "30779d02d28dab3cfbc8c012f7e26970",
+    "revision": "173f6e866b1e2d8ca8abee668f350d4c",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
