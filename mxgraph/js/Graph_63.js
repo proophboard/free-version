@@ -362,6 +362,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 	this.domainUrl = '';
 	this.domainPathUrl = '';
 	this.copyToClipboard = null;
+	this.notify = null;
 	this.deeplinkFactory = function (cellId) {
 		return cellId;
 	}
@@ -449,6 +450,14 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 
 	this.canCopyToClipboard = function () {
 		return this.copyToClipboard !== null;
+	}
+
+	this.enableNotifications = function(notifyFunc) {
+		this.notify = notifyFunc;
+	}
+
+	this.canNotify = function () {
+		return this.notify !== null;
 	}
 
 	this.setDeeplinkFactory = function (deeplinkFactory) {
@@ -7009,6 +7018,27 @@ if (typeof mxVertexHandler != 'undefined')
 				});
 
 				if(!isInContainer) {
+					// x position of hidden edge is somehow wrongly calculated this results in edges not being part of childrenInContainer
+					// So here we check if source and target of an edge are still children of container and if so, also keep the edge
+					if(child.isEdge()) {
+						let isSourceInContainer = false;
+						let isTargetInContainer = false;
+
+						childrenInContainer.forEach((childInContainer) => {
+							if(child.source && childInContainer.id === child.source.id) {
+								isSourceInContainer = true;
+							}
+
+							if(child.target && childInContainer.id === child.target.id) {
+								isTargetInContainer = true;
+							}
+						});
+
+						if(isSourceInContainer && isTargetInContainer) {
+							return;
+						}
+					}
+
 					this.model.beginUpdate();
 
 					try {
@@ -10665,84 +10695,7 @@ if (typeof mxVertexHandler != 'undefined')
 	
 		mxVertexHandler.prototype.updateLinkHint = function(link, links)
 		{
-			if ((link == null && (links == null || links.length == 0)) ||
-				this.graph.getSelectionCount() > 1)
-			{
-				if (this.linkHint != null)
-				{
-					this.linkHint.parentNode.removeChild(this.linkHint);
-					this.linkHint = null;
-				}
-			}
-			else if (link != null || (links != null && links.length > 0))
-			{
-				if (this.linkHint == null)
-				{
-					this.linkHint = createHint();
-					this.linkHint.style.padding = '6px 8px 6px 8px';
-					this.linkHint.style.opacity = '1';
-					this.linkHint.style.filter = '';
-					
-					this.graph.container.appendChild(this.linkHint);
-				}
-
-				this.linkHint.innerHTML = '';
-				
-				if (link != null)
-				{
-					this.linkHint.appendChild(this.graph.createLinkForHint(link));
-					
-					if (this.graph.isEnabled() && typeof this.graph.editLink === 'function')
-					{
-						var changeLink = document.createElement('img');
-						changeLink.setAttribute('src', Editor.editImage);
-						changeLink.setAttribute('title', mxResources.get('editLink'));
-						changeLink.setAttribute('width', '11');
-						changeLink.setAttribute('height', '11');
-						changeLink.style.marginLeft = '10px';
-						changeLink.style.marginBottom = '-1px';
-						changeLink.style.cursor = 'pointer';
-						this.linkHint.appendChild(changeLink);
-						
-						mxEvent.addListener(changeLink, 'click', mxUtils.bind(this, function(evt)
-						{
-							this.graph.setSelectionCell(this.state.cell);
-							this.graph.editLink();
-							mxEvent.consume(evt);
-						}));
-						
-						var removeLink = document.createElement('img');
-						removeLink.setAttribute('src', Dialog.prototype.clearImage);
-						removeLink.setAttribute('title', mxResources.get('removeIt', [mxResources.get('link')]));
-						removeLink.setAttribute('width', '13');
-						removeLink.setAttribute('height', '10');
-						removeLink.style.marginLeft = '4px';
-						removeLink.style.marginBottom = '-1px';
-						removeLink.style.cursor = 'pointer';
-						this.linkHint.appendChild(removeLink);
-						
-						mxEvent.addListener(removeLink, 'click', mxUtils.bind(this, function(evt)
-						{
-							this.graph.setLinkForCell(this.state.cell, null);
-							mxEvent.consume(evt);
-						}));
-					}
-				}
-
-				if (links != null)
-				{
-					for (var i = 0; i < links.length; i++)
-					{
-						var div = document.createElement('div');
-						div.style.marginTop = (link != null || i > 0) ? '6px' : '0px';
-						div.appendChild(this.graph.createLinkForHint(
-							links[i].getAttribute('href'),
-							mxUtils.getTextContent(links[i])));
-						
-						this.linkHint.appendChild(div);
-					}
-				}
-			}
+			// no op
 		};
 		
 		mxEdgeHandler.prototype.updateLinkHint = mxVertexHandler.prototype.updateLinkHint;

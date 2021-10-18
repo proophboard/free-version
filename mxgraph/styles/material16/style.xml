@@ -359,7 +359,7 @@
         <add as="spacing" value="0" />
         <add as="noLabel" value="1" />
         <add as="imageAspect" value="1" />
-        <add as="aspect" value="1" />
+        <add as="aspect" value="fixed" />
     </add>
     <add as="icon">
         <add as="shape" value="image"/>
@@ -368,6 +368,7 @@
         <add as="verticalLabelPosition" value="bottom"/>
         <add as="image" value="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjNTY1NjU2IiBkPSJNNDYyLjMgNjIuNkM0MDcuNSAxNS45IDMyNiAyNC4zIDI3NS43IDc2LjJMMjU2IDk2LjVsLTE5LjctMjAuM0MxODYuMSAyNC4zIDEwNC41IDE1LjkgNDkuNyA2Mi42Yy02Mi44IDUzLjYtNjYuMSAxNDkuOC05LjkgMjA3LjlsMTkzLjUgMTk5LjhjMTIuNSAxMi45IDMyLjggMTIuOSA0NS4zIDBsMTkzLjUtMTk5LjhjNTYuMy01OC4xIDUzLTE1NC4zLTkuOC0yMDcuOXoiIGNsYXNzPSIiPjwvcGF0aD48L3N2Zz4="/>
         <add as="spacing" value="0" />
+        <add as="aspect" value="fixed" />
     </add>
     <add as="iframe">
         <add as="shape" value="iframe"/>

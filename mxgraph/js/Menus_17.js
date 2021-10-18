@@ -111,58 +111,9 @@ Menus.prototype.init = function()
 		
 		var addItem = mxUtils.bind(this, function(fontsize)
 		{
-			this.styleChange(menu, fontsize, [mxConstants.STYLE_FONTSIZE], [fontsize], null, parent, function()
-			{
-				// Creates an element with arbitrary size 3
-				document.execCommand('fontSize', false, '3');
-				
-				// Changes the css font size of the first font element inside the in-place editor with size 3
-				// hopefully the above element that we've just created. LATER: Check for new element using
-				// previous result of getElementsByTagName (see other actions)
-				var elts = graph.cellEditor.textarea.getElementsByTagName('font');
-				
-				for (var i = 0; i < elts.length; i++)
-				{
-					if (elts[i].getAttribute('size') == '3')
-					{
-						elts[i].removeAttribute('size');
-						elts[i].style.fontSize = fontsize + 'px';
-						
-						break;
-					}
-				}
-
-				var cells = graph.getSelectionCells();
-				var containers = [];
-				if(cells && cells.length) {
-					cells.forEach(cell => {
-						if(inspectioUtils.isContainer(cell)) {
-							containers.push(cell);
-						}
-					})
-				}
-
-				if(containers.length) {
-					graph.model.beginUpdate();
-
-					try {
-						containers.forEach(container => {
-							graph.syncContainerStyles(container, 'fontSize', fontsize);
-						});
-					} finally {
-						graph.model.endUpdate();
-
-						containers.forEach(container => {
-							var state = graph.view.getState(container);
-							if (state.text != null && graph.cellEditor.isHideLabel(state))
-							{
-								graph.cellEditor.textNode = state.text.node;
-								graph.cellEditor.textNode.style.visibility = 'hidden';
-							}
-						})
-					}
-				}
-			});
+			this.styleChange(menu, fontsize, [mxConstants.STYLE_FONTSIZE], [fontsize], null, parent, () => {
+				this.editorUi.applyFontSize(fontsize);
+			})
 		});
 		
 		for (var i = 0; i < sizes.length; i++)
@@ -1029,7 +980,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			this.addMenuItems(menu, ['pasteHere'], null, evt);
 		}
 
-		this.addMenuItem(menu, 'deeplink', null, evt, null, 'Copy Link');
+		this.addMenuItem(menu, 'deeplink', null, evt, null, 'Direct Link');
 
 		if(graph.hasCockpitBaseUrl() && [ispConst.TYPE_AGGREGATE, ispConst.TYPE_COMMAND, ispConst.TYPE_EVENT, ispConst.TYPE_DOCUMENT].includes(inspectioUtils.getType(cell))) {
 			this.addMenuItem(menu, 'cockpit', null, evt, null, 'Open In Cockpit');
@@ -1048,7 +999,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			this.addMenuItem(menu, 'toggleswimlane', null, evt, null, 'Swim Lane', inspectioUtils.isContainerSwimLane(cell));
 		}
 
-		this.addMenuItem(menu, 'lookup_element', null, evt, null, 'Lookup');
+		this.addMenuItem(menu, 'lookup_element', null, evt, null, 'Find Similar');
 
 		menu.addSeparator();
 
@@ -1064,7 +1015,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			menu.addSeparator();
 		}
 
-		this.addMenuItems(menu, ['delete', '-', 'cut', 'copy', '-', 'duplicate'], null, evt);
+		this.addMenuItems(menu, ['cut', 'copy', 'delete', '-'], null, evt);
 	}
 
 	if (!graph.isSelectionEmpty())
@@ -1088,8 +1039,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				var endArrow = mxUtils.getValue(state.style, mxConstants.STYLE_ENDARROW, null);
 
 				var edgeTypeMenu = menu.addItem('Edge Type');
-				this.edgeStyleChange(menu, 'elbow', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['elbowEdgeStyle', 'vertical', null, null], null, edgeTypeMenu, true, currentEdgeType === 'elbowEdgeStyle');
-				this.edgeStyleChange(menu, 'orthogonal', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['orthogonalEdgeStyle', null, null], null, edgeTypeMenu, true, (currentEdgeType === 'orthogonalEdgeStyle' && curved === null) || currentEdgeType === null);
+				this.edgeStyleChange(menu, 'elbow', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['orthogonalEdgeStyle', null, null], null, edgeTypeMenu, true, (currentEdgeType === 'orthogonalEdgeStyle' && curved === null) || currentEdgeType === null);
 				this.edgeStyleChange(menu, 'straight', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['isometricEdgeStyle', null, null, null], null, edgeTypeMenu, true, currentEdgeType === 'isometricEdgeStyle');
 				this.edgeStyleChange(menu, 'curved', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['orthogonalEdgeStyle', '1', null], null, edgeTypeMenu, true, currentEdgeType === 'orthogonalEdgeStyle' && curved === 1);
 				this.edgeStyleChange(menu, 'relation', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['entityRelationEdgeStyle', null, null], null, edgeTypeMenu, true, currentEdgeType === 'entityRelationEdgeStyle');
@@ -1100,14 +1050,16 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				this.edgeStyleChange(menu, 'Start Arrow', [mxConstants.STYLE_STARTARROW], [hasStartArrow? 'none' : mxConstants.ARROW_OPEN], null, arrowMenu, false, hasStartArrow);
 				this.edgeStyleChange(menu, 'End Arrwo', [mxConstants.STYLE_ENDARROW], [hasEndArrow? 'none' : mxConstants.ARROW_OPEN], null, arrowMenu, false, hasEndArrow);
 
+				var lineStyle = menu.addItem('Line Style');
+
 				if (mxUtils.getValue(cellStyle, mxConstants.STYLE_DASHED, false)) {
-					this.addMenuItem(menu, 'set_non_dashed_style', null, evt, null, 'Line Style');
+					this.addMenuItem(menu, 'set_non_dashed_style', lineStyle, evt, null, 'Dashed', true);
 				} else {
-					this.addMenuItem(menu, 'set_dashed_style', null, evt, null, 'Dashed Style');
+					this.addMenuItem(menu, 'set_dashed_style', lineStyle, evt, null, 'Dashed', false);
 				}
 			}
 
-			if (inspectioUtils.isImageOrIcon(cell)) {
+			if (inspectioUtils.isIcon(cell)) {
 				menu.addSeparator();
 
 				var labelPositionMenu = menu.addItem('Label Position');
@@ -1187,7 +1139,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				}
 			}
 
-			if(!graph.isSelectionEmpty()) {
+			if(!graph.isSelectionEmpty() && graph.getModel().isVertex(cell)) {
 				this.addMenuItem(menu, 'trigger_cody', null, evt, null, 'Trigger Cody');
 			}
 		}

@@ -436,6 +436,10 @@ Actions.prototype.init = function()
 			var cellStr = cellIds.join(";");
 
 			graph.copyToClipboard(graph.deeplinkFactory(cellStr));
+
+			if(graph.canNotify()) {
+				graph.notify('Link copied to clipboard', '', 'info');
+			}
 		}
 	}, null, null, null);
 

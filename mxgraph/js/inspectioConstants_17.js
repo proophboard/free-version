@@ -54,7 +54,7 @@ var ispConst = {
     ZOOM_MODE_ALL_ELES : 'allEles',
 
     //Style
-    THEME : 'material15',
+    THEME : 'material16',
 
     PROCESS_BORDER_COLOR : '#919191',
 
