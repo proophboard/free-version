@@ -47013,7 +47013,7 @@ mxCellEditor.prototype.autoSize = true;
  * Specifies if the text should be selected when editing starts. Default is
  * true.
  */
-mxCellEditor.prototype.selectText = true;
+mxCellEditor.prototype.selectText = false;
 
 /**
  * Variable: emptyLabelText
