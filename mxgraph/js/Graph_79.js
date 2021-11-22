@@ -7346,7 +7346,7 @@ if (typeof mxVertexHandler != 'undefined')
 		 */
 		Graph.prototype.defaultEdgeStyle = {};
 
-		Graph.prototype.syncOverlappingChildrenToContainer = function(container, bound, cellIgnoreList) {
+		Graph.prototype.syncOverlappingChildrenToContainer = function(container, bound, cellIgnoreList, ignoreCellsWithContainerParent) {
 			if(!bound) {
                 bound = {
 					width: container.getGeometry().width,
@@ -7383,7 +7383,7 @@ if (typeof mxVertexHandler != 'undefined')
 
 			try {
 				childrenInContainer.forEach(child => {
-					if(cellIgnoreList && cellIgnoreList.includes(child)) {
+					if((cellIgnoreList && cellIgnoreList.includes(child)) || (ignoreCellsWithContainerParent && inspectioUtils.isContainer(child.parent))) {
 						return;
 					}
 

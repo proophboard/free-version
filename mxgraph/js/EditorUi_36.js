@@ -4280,6 +4280,14 @@ EditorUi.prototype.createKeyHandler = function(editor)
 				} else {
 					moveFunct(internalFinalStepSize, internalKeyCode);
 				}
+
+				var cells = graph.getSelectionCells();
+
+				cells.forEach(cell => {
+					if(inspectioUtils.isContainer(cell)) {
+						graph.syncOverlappingChildrenToContainer(cell, undefined, cells, true);
+					}
+				})
 			} finally {
 				graph.model.endUpdate();
 				finalStepSize = null;
