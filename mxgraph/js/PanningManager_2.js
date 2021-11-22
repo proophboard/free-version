@@ -63,6 +63,8 @@ mxPanningManager = function (graph)
             else
             {
                 graph.panGraph(this.t0x + this.getDx() / graph.currentScale, this.t0y + this.getDy() / graph.currentScale);
+                graph.triggerPanningListeners();
+
             }
         }), this.delay);
     });

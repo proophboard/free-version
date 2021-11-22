@@ -654,9 +654,19 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 		this.panningListeners = this.panningListeners.filter(l => l !== listener);
 	}
 
-	this.addListener(this.EVT_USER_IS_PANNING, () => {
+	this.triggerPanningListeners = function() {
 		this.panningListeners.forEach(l => l(this.currentTranslate));
+	}
+
+	this.addListener(this.EVT_USER_IS_PANNING, () => {
+		this.triggerPanningListeners();
 	})
+
+	this.addListener(this.EVT_USER_IS_AUTO_SCROLLING, () => {
+		this.triggerPanningListeners();
+	})
+
+
 
 	this.onZoom = function (listener) {
 		this.zoomListeners.push(listener);
@@ -1923,7 +1933,7 @@ Graph.prototype.transparentBackground = true;
 /**
  * Sets the default target for all links in cells.
  */
-Graph.prototype.defaultEdgeLength = 80;
+Graph.prototype.defaultEdgeLength = 200;
 
 /**
  * Disables move of bends/segments without selecting.
@@ -10271,20 +10281,7 @@ if (typeof mxVertexHandler != 'undefined')
 			
 			return guide;
 		};
-	
-		// Hold alt to ignore drop target
-		var mxGraphHandlerMoveCells = mxGraphHandler.prototype.moveCells;
-		
-		mxGraphHandler.prototype.moveCells = function(cells, dx, dy, clone, target, evt)
-		{
-			if (mxEvent.isAltDown(evt))
-			{
-				target = null;
-			}
-			
-			mxGraphHandlerMoveCells.apply(this, arguments);
-		};
-		
+
 		/**
 		 * Hints on handlers
 		 */

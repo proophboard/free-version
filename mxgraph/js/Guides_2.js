@@ -255,3 +255,8 @@ mxGuide.prototype.getDelta = function(bounds, stateX, dx, stateY, dy)
 
     return new mxPoint(dx, dy);
 };
+
+mxGuide.prototype.getGuideTolerance = function()
+{
+    return this.graph.gridSize;
+};
