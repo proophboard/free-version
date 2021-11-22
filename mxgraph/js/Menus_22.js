@@ -1048,16 +1048,32 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 
 			var currentType = inspectioUtils.getType(cell);
 
+			var shortcuts = {
+				'event': 'ALT+E',
+				'command': 'ALT+C',
+				'aggregate': 'ALT+A',
+				'role': 'ALT+R',
+				'document': 'ALT+D',
+				'externalSystem': 'ALT+S',
+				'hotSpot': 'ALT+H',
+				'policy': 'ALT+P',
+				'ui': 'ALT+U',
+			}
+
 			inspectioUtils.STICKY_TYPES.forEach(type => {
 				const label = type.charAt(0).toLocaleUpperCase() + type.slice(1).replaceAll(/[A-Z]/g, a => ' ' + a);
 				const stickyItem = this.addMenuItem(menu, 'change_sticky_type', typeMenu, type, null, label, currentType === type);
 
-				const col = stickyItem.getElementsByTagName('td')[2];
-				col.style.width = '20px';
+				let col = stickyItem.getElementsByTagName('td')[2];
+
+				if(shortcuts.hasOwnProperty(type)) {
+					col.style.color = 'grey';
+					col.innerHTML = '<span style="padding-right: 10px">' + shortcuts[type] + '</span>';
+				}
+
 				const stickyImage = document.createElement('img');
 				stickyImage.setAttribute('src', inspectioUtils.getIconImageSrcForStickyType(type, 18));
 				col.appendChild(stickyImage);
-				stickyItem.appendChild(col);
 			})
 
 			var stickyState = graph.view.getState(cell);

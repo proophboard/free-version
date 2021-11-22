@@ -4084,11 +4084,8 @@ EditorUi.prototype.createOutline = function(wnd)
 };
 
 // Alt+Shift+Keycode mapping to action
-EditorUi.prototype.altShiftActions = {67: 'clearWaypoints', // Alt+Shift+C
-  65: 'connectionArrows', // Alt+Shift+A
-  76: 'editLink', // Alt+Shift+L
-  80: 'connectionPoints', // Alt+Shift+P
-  84: 'editTooltip', // Alt+Shift+T
+EditorUi.prototype.altShiftActions = {
+  67: 'clearWaypoints', // Alt+Shift+C
   86: 'pasteSize', // Alt+Shift+V
   88: 'copySize' // Alt+Shift+X
 };
@@ -4125,143 +4122,195 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		return mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey);
 	};
 
-	var queue = [];
 	var thread = null;
-	
+	var count = 0;
+	var factor = 1;
+	var finalStepSize = null;
+	var lastKeyCode = null;
+
+	function resizeFunct (internalStepSize , keyCode) {
+		if(finalStepSize === null) {
+			finalStepSize = internalStepSize;
+		} else {
+			finalStepSize += internalStepSize;
+		}
+
+		var cells = graph.getSelectionCells();
+
+		for (var i = 0; i < cells.length; i++)
+		{
+			if (graph.getModel().isVertex(cells[i]) && graph.isCellResizable(cells[i]))
+			{
+				var geo = graph.getCellGeometry(cells[i]);
+
+				if (geo != null)
+				{
+					geo = geo.clone();
+
+					if (keyCode == 37)
+					{
+						geo.width = Math.max(0, geo.width - internalStepSize);
+					}
+					else if (keyCode == 38)
+					{
+						geo.height = Math.max(0, geo.height - internalStepSize);
+					}
+					else if (keyCode == 39)
+					{
+						geo.width += internalStepSize;
+					}
+					else if (keyCode == 40)
+					{
+						geo.height += internalStepSize;
+					}
+
+					graph.getModel().setGeometry(cells[i], geo);
+				}
+			}
+		}
+	}
+
+	function moveFunct (internalStepSize, keyCode) {
+		if(finalStepSize === null) {
+			finalStepSize = internalStepSize;
+		} else {
+			finalStepSize += internalStepSize;
+		}
+
+		// Moves vertices up/down in a stack layout
+		var cell = graph.getSelectionCell();
+		var parent = graph.model.getParent(cell);
+		var layout = null;
+
+		if (graph.getSelectionCount() == 1 && graph.model.isVertex(cell) &&
+			graph.layoutManager != null && !graph.isCellLocked(cell))
+		{
+			layout = graph.layoutManager.getLayout(parent);
+		}
+
+		if (layout != null && layout.constructor == mxStackLayout)
+		{
+			var index = parent.getIndex(cell);
+
+			if (keyCode == 37 || keyCode == 38)
+			{
+				graph.model.add(parent, cell, Math.max(0, index - 1));
+			}
+			else if (keyCode == 39 ||keyCode == 40)
+			{
+				graph.model.add(parent, cell, Math.min(graph.model.getChildCount(parent), index + 1));
+			}
+		}
+		else
+		{
+			var dx = 0;
+			var dy = 0;
+
+			if (keyCode == 37)
+			{
+				dx = -internalStepSize;
+			}
+			else if (keyCode == 38)
+			{
+				dy = -internalStepSize;
+			}
+			else if (keyCode == 39)
+			{
+				dx = internalStepSize;
+			}
+			else if (keyCode == 40)
+			{
+				dy = internalStepSize;
+			}
+
+			graph.moveCells(graph.getMovableCells(graph.getSelectionCells()), dx, dy);
+			graph.scrollCellToVisible(graph.getSelectionCell());
+		}
+	}
+
 	// Helper function to move cells with the cursor keys
 	function nudge(keyCode, stepSize, resize)
 	{
-		queue.push(function()
+		if(lastKeyCode === null) {
+			lastKeyCode = keyCode;
+		}
+
+		count++;
+		if(count % 4 === 0)
 		{
-			if (!graph.isSelectionEmpty() && graph.isEnabled())
+			factor++;
+		}
+
+		if (!graph.isSelectionEmpty() && graph.isEnabled())
+		{
+			stepSize = ((stepSize != null) ? stepSize : 1) * factor;
+
+			graph.getModel().beginUpdateWithoutChangeNotifications();
+			try
 			{
-				stepSize = (stepSize != null) ? stepSize : 1;
-	
 				if (resize)
 				{
-					// Resizes all selected vertices
-					graph.getModel().beginUpdate();
-					try
-					{
-						var cells = graph.getSelectionCells();
-						
-						for (var i = 0; i < cells.length; i++)
-						{
-							if (graph.getModel().isVertex(cells[i]) && graph.isCellResizable(cells[i]))
-							{
-								var geo = graph.getCellGeometry(cells[i]);
-								
-								if (geo != null)
-								{
-									geo = geo.clone();
-									
-									if (keyCode == 37)
-									{
-										geo.width = Math.max(0, geo.width - stepSize);
-									}
-									else if (keyCode == 38)
-									{
-										geo.height = Math.max(0, geo.height - stepSize);
-									}
-									else if (keyCode == 39)
-									{
-										geo.width += stepSize;
-									}
-									else if (keyCode == 40)
-									{
-										geo.height += stepSize;
-									}
-									
-									graph.getModel().setGeometry(cells[i], geo);
-								}
-							}
-						}
-					}
-					finally
-					{
-						graph.getModel().endUpdate();
-					}
+					resizeFunct(stepSize, keyCode);
 				}
 				else
 				{
-					// Moves vertices up/down in a stack layout
-					var cell = graph.getSelectionCell();
-					var parent = graph.model.getParent(cell);
-					var layout = null;
-	
-					if (graph.getSelectionCount() == 1 && graph.model.isVertex(cell) &&
-						graph.layoutManager != null && !graph.isCellLocked(cell))
-					{
-						layout = graph.layoutManager.getLayout(parent);
-					}
-					
-					if (layout != null && layout.constructor == mxStackLayout)
-					{
-						var index = parent.getIndex(cell);
-						
-						if (keyCode == 37 || keyCode == 38)
-						{
-							graph.model.add(parent, cell, Math.max(0, index - 1));
-						}
-						else if (keyCode == 39 ||keyCode == 40)
-						{
-							graph.model.add(parent, cell, Math.min(graph.model.getChildCount(parent), index + 1));
-						}
-					}
-					else
-					{
-						var dx = 0;
-						var dy = 0;
-						
-						if (keyCode == 37)
-						{
-							dx = -stepSize;
-						}
-						else if (keyCode == 38)
-						{
-							dy = -stepSize;
-						}
-						else if (keyCode == 39)
-						{
-							dx = stepSize;
-						}
-						else if (keyCode == 40)
-						{
-							dy = stepSize;
-						}
-						
-						graph.moveCells(graph.getMovableCells(graph.getSelectionCells()), dx, dy);
-					}				
+					moveFunct(stepSize, keyCode);
 				}
 			}
-		});
-		
+			finally
+			{
+				graph.getModel().endUpdateWithoutChangeNotifications();
+			}
+
+		}
+
+		const commit = (internalFinalStepSize, internalKeyCode, internalResize) => {
+			count = 0;
+			factor = 1;
+			lastKeyCode = null;
+
+			// First reset changes made without change notification
+			graph.model.beginUpdateWithoutChangeNotifications();
+
+			try {
+				if(internalResize) {
+					resizeFunct(internalFinalStepSize * -1, internalKeyCode);
+				} else {
+					moveFunct(internalFinalStepSize * -1, internalKeyCode);
+				}
+			} finally {
+				graph.model.endUpdateWithoutChangeNotifications();
+			}
+
+			// And now trigger one final change with change notification
+			graph.model.beginUpdate();
+			try {
+				if(internalResize) {
+					resizeFunct(internalFinalStepSize, internalKeyCode);
+				} else {
+					moveFunct(internalFinalStepSize, internalKeyCode);
+				}
+			} finally {
+				graph.model.endUpdate();
+				finalStepSize = null;
+			}
+		}
+
 		if (thread != null)
 		{
 			window.clearTimeout(thread);
 		}
-		
-		thread = window.setTimeout(function()
-		{
-			if (queue.length > 0)
-			{
-				graph.getModel().beginUpdate();
-				try
-				{
-					for (var i = 0; i < queue.length; i++)
-					{
-						queue[i]();
-					}
-					
-					queue = [];
-				}
-				finally
-				{
-					graph.getModel().endUpdate();
-				}
-				graph.scrollCellToVisible(graph.getSelectionCell());
-			}
-		}, 200);
+
+		console.log("commit triggered, last keyCode, keyCode: ", lastKeyCode, keyCode);
+		if(lastKeyCode === keyCode) {
+			thread = window.setTimeout(() => {
+				console.log("commit triggered");
+				commit(finalStepSize, keyCode, resize);
+			}, 200);
+		} else {
+			console.log("commit triggered, keyCodes not equal, ", lastKeyCode, keyCode)
+			commit(finalStepSize, keyCode);
+		}
 	};
 	
 	// Overridden to handle special alt+shift+cursor keyboard shortcuts
@@ -4285,26 +4334,95 @@ EditorUi.prototype.createKeyHandler = function(editor)
 				}
 			}
 			
-			if (evt.keyCode == 9 && mxEvent.isAltDown(evt))
+			if (mxEvent.isAltDown(evt))
 			{
-				if (mxEvent.isShiftDown(evt))
+				if (evt.keyCode === 34)
 				{
-					// Alt+Shift+Tab
+					// Alt+Image Down
+					return function()
+					{
+						graph.selectChildCell();
+
+					};
+				}
+				else if (evt.keyCode === 33)
+				{
+					// Alt+Image Up
 					return function()
 					{
 						graph.selectParentCell();
 					};
 				}
-				else
-				{
-					// Alt+Tab
-					return function()
-					{
-						graph.selectChildCell();
-					};
+
+				if(!mxEvent.isShiftDown(evt)) {
+					var switchTypeAction = editorUi.actions.get('change_sticky_type');
+
+					if (evt.keyCode === 69) {
+						// ALT+E
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_EVENT);
+						}
+					}
+
+					if (evt.keyCode === 67) {
+						// ALT+C
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_COMMAND);
+						}
+					}
+
+					if (evt.keyCode === 65) {
+						// ALT+A
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_AGGREGATE);
+						}
+					}
+
+					if (evt.keyCode === 82) {
+						// ALT+R
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_ROLE);
+						}
+					}
+
+					if (evt.keyCode === 68) {
+						// ALT+D
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_DOCUMENT);
+						}
+					}
+
+					if (evt.keyCode === 83) {
+						// ALT+C
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_EXTERNAL_SYSTEM);
+						}
+					}
+
+					if (evt.keyCode === 72) {
+						// ALT+H
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_HOT_SPOT);
+						}
+					}
+
+					if (evt.keyCode === 80) {
+						// ALT+P
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_POLICY);
+						}
+					}
+
+					if (evt.keyCode === 85) {
+						// ALT+U
+						return () => {
+							switchTypeAction.funct(ispConst.TYPE_UI);
+						}
+					}
 				}
 			}
-			else if (directions[evt.keyCode] != null && !graph.isSelectionEmpty())
+
+			if (directions[evt.keyCode] != null && !graph.isSelectionEmpty())
 			{
 				if (mxEvent.isShiftDown(evt) && mxEvent.isAltDown(evt))
 				{
