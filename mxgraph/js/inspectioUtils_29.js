@@ -521,6 +521,7 @@ var inspectioUtils = {
     },
 
     parseTags: function (str, keepCase) {
+        str = str.replaceAll(/=".*(#\w+)"/gm, '');
         let result;
         const tags = [];
         const reg = /([^\w]|^)#(?<tag>\w+)/gm;
