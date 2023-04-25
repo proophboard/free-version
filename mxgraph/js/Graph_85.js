@@ -5718,8 +5718,9 @@ HoverIcons.prototype.checkCollisions = true;
  */
 HoverIcons.prototype.arrowFill = '#29b6f2';
 
-HoverIcons.prototype.pr = window.devicePixelRatio;
-
+// HoverIcons.prototype.pr = window.devicePixelRatio;
+// Fixed devicePixelRatio because for MacBook it's 2 and this results in invisible large hover icons which overlap cards
+HoverIcons.prototype.pr = 1;
 
 /**
  * Up arrow.

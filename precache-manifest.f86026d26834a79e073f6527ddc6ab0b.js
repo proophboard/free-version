@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "95ab4fc636df7b213e40bd23c584eb96",
+    "revision": "513ab29ba080913d3d3720e83e3d2bc4",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
