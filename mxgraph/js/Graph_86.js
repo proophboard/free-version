@@ -650,6 +650,12 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 		this.changeActiveGraphElementListener = listener;
 	}
 
+	this.triggerChangeActiveGraphElementIfIsActive = function (cell) {
+		if(this.currentActiveGraphElement && cell.getId() === this.currentActiveGraphElement.getId()) {
+			this.triggerChangeActiveGraphElement(cell);
+		}
+	}
+
 	this.triggerChangeActiveGraphElement = function (cell) {
 		this.currentActiveGraphElement = cell;
 		var syncTimer = null;
@@ -694,6 +700,16 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 				} finally {
 					this.model.endUpdate();
 				}
+			},
+			(newTags) => {
+				this.model.beginUpdate();
+				try {
+					inspectioUtils.replaceTags(cell, newTags, this);
+				} finally {
+					this.model.endUpdate();
+				}
+
+				this.triggerChangeActiveGraphElementIfIsActive(cell);
 			}
 		);
 	}
@@ -7744,9 +7760,60 @@ if (typeof mxVertexHandler != 'undefined')
 			}
 		};
 
+		mxGraph.prototype.markCellAsConnected = function(cell) {
+			// Check that cell exists on the graph and was not disconnected by user
+			if(this.model.getCell(cell.getId()) && !inspectioUtils.hasTag(cell, ispConst.TAG_DISCONNECTED)) {
+				this.model.beginUpdate();
+
+				try {
+					inspectioUtils.addTag(cell, ispConst.TAG_CONNECTED, this);
+				} finally {
+					this.model.endUpdate();
+				}
+
+				this.triggerChangeActiveGraphElementIfIsActive(cell);
+			}
+		}
+
+		// Explicitly triggered by user from metadata sidebar
+		mxGraph.prototype.forceCellAsConnected = function(cell) {
+			this.model.beginUpdate();
+
+			try {
+				inspectioUtils.addTag(cell, ispConst.TAG_CONNECTED, this);
+				inspectioUtils.removeTag(cell, ispConst.TAG_DISCONNECTED, this);
+			} finally {
+				this.model.endUpdate();
+			}
+
+			this.triggerChangeActiveGraphElementIfIsActive(cell);
+		}
+
+		// Explicitly triggered by user from metadata sidebar
+		mxGraph.prototype.forceCellAsDisconnected = function(cell) {
+			this.model.beginUpdate();
+
+			try {
+				inspectioUtils.removeTag(cell, ispConst.TAG_CONNECTED, this);
+				inspectioUtils.addTag(cell, ispConst.TAG_DISCONNECTED, this);
+			} finally {
+				this.model.endUpdate();
+			}
+
+			this.triggerChangeActiveGraphElementIfIsActive(cell);
+		}
+
 		mxGraph.prototype.importCells = function(cells, dx, dy, target, evt, mapping)
 		{
-			return this.moveCells(cells, dx, dy, true, target, evt, mapping);
+			var importedCells = this.moveCells(cells, dx, dy, true, target, evt, mapping);
+
+			// Connect cells on one of the next ticks to avoid conflicts in changeset detection
+			window.setTimeout(() => {
+				cells.forEach(cell => this.markCellAsConnected(cell));
+				importedCells.forEach(cell => this.markCellAsConnected(cell));
+			}, 10);
+
+			return importedCells;
 		};
 
 		mxGraph.prototype.importCellsAndShowAll = function(cells, dx, dy, target, evt, mapping)

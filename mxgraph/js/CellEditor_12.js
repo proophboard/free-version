@@ -911,6 +911,7 @@ mxCellEditor.prototype.applyValue = function(state, value)
         const tags = inspectioUtils.parseTags(value);
         let existingTags = inspectioUtils.getTags(state.cell);
         let existingDeployTags = [];
+        let existingConnectTags = [];
 
         if(inspectioUtils.isContainer(state.cell)) {
             const deployTags = [ispConst.TAG_IMPORTANT, ispConst.TAG_PLANNED, ispConst.TAG_READY, ispConst.TAG_DEPLOYED];
@@ -918,11 +919,16 @@ mxCellEditor.prototype.applyValue = function(state, value)
             existingTags = existingTags.filter(t => !deployTags.includes(t));
         }
 
+        const connectedTags = [ispConst.TAG_CONNECTED, ispConst.TAG_DISCONNECTED];
+        existingConnectTags = exexistingTags.filter(t => connectedTags.includes(t));
+        existingTags = existingTags.filter(t => !connectedTags.includes(t));
+
+
         tags.sort();
         existingTags.sort();
 
         if(JSON.stringify(tags) !== JSON.stringify(existingTags)) {
-            inspectioUtils.replaceTags(state.cell, [...tags, ...existingDeployTags], this.graph);
+            inspectioUtils.replaceTags(state.cell, [...tags, ...existingDeployTags, ...existingConnectTags], this.graph);
         }
     }
 };

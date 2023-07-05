@@ -40,6 +40,8 @@ var ispConst = {
     TAG_PLANNED : 'planned',
     TAG_READY : 'ready',
     TAG_DEPLOYED : 'deployed',
+    TAG_CONNECTED : 'pb:connected',
+    TAG_DISCONNECTED : 'pb:disconnected',
 
     FILL_COLOR_TAG_IMPORTANT : '#FF9999',
     FILL_COLOR_TAG_PLANNED : '#FFE1AD',
