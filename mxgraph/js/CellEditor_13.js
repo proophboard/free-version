@@ -920,7 +920,7 @@ mxCellEditor.prototype.applyValue = function(state, value)
         }
 
         const connectedTags = [ispConst.TAG_CONNECTED, ispConst.TAG_DISCONNECTED];
-        existingConnectTags = exexistingTags.filter(t => connectedTags.includes(t));
+        existingConnectTags = existingTags.filter(t => connectedTags.includes(t));
         existingTags = existingTags.filter(t => !connectedTags.includes(t));
 
 
