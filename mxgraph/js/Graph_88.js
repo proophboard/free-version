@@ -666,12 +666,12 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 		var syncTimer = null;
 
 		this.changeActiveGraphElementListener(cell,
-			(newMetadata) => {
+			(newMetadata, force) => {
 				if(syncTimer != null) {
 					window.clearTimeout(syncTimer);
 				}
 
-				syncTimer = window.setTimeout(() => {
+				var updateMetadata = () => {
 					this.model.beginUpdate();
 					try {
 						this.setAttributeForCell(cell, 'metadata', newMetadata);
@@ -682,7 +682,13 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 					} finally {
 						this.model.endUpdate();
 					}
-				}, 1000)
+				}
+
+				if(force) {
+					updateMetadata();
+				} else {
+					syncTimer = window.setTimeout(updateMetadata, 1000);
+				}
 			},
 			(similarCellIds, newMetadata) => {
 				if(!Array.isArray(similarCellIds)) {
