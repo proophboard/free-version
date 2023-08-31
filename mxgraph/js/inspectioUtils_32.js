@@ -421,6 +421,7 @@ var inspectioUtils = {
         alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', orgStyle['alternateFontSize']);
         container.alternateStyle = alternateStyle;
         container.originalStyle = container.getStyle();
+        container.setId(graph.model.createId());
         graph.orderCells(true, [container]);
     },
 
