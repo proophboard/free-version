@@ -1,3 +1,12 @@
+mxVertexHandler.prototype.isSizerVisible = function(index)
+{
+    if(this.graph.getSelectionCount() > 1) {
+        return false;
+    }
+
+    return true;
+};
+
 mxVertexHandler.prototype.resizeVertex = function(me)
 {
     var ct = new mxPoint(this.state.getCenterX(), this.state.getCenterY());

@@ -414,14 +414,16 @@ var inspectioUtils = {
         cell.setGeometry(geometry);
     },
 
-    initContainer: function(container, graph) {
+    initContainer: function(container, graph, doNotAssignNewId) {
         inspectioUtils.syncAlternateBounds(container);
         const orgStyle = graph.getStylesheet().getCellStyle(container.getStyle());
         let alternateStyle = mxUtils.setStyle(container.getStyle(), 'verticalAlign', orgStyle['alternateVerticalAlign']);
         alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', orgStyle['alternateFontSize']);
         container.alternateStyle = alternateStyle;
         container.originalStyle = container.getStyle();
-        container.setId(graph.model.createId());
+        if(!doNotAssignNewId) {
+            container.setId(graph.model.createId());
+        }
         graph.orderCells(true, [container]);
     },
 
