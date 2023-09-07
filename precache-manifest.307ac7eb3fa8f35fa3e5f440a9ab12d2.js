@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "1393090f5c07af24c933",
+    "revision": "8894db9cb979c1ef0b20",
     "url": "https://free.prooph-board.com/static/css/main.54486358.chunk.css"
   },
   {
-    "revision": "1393090f5c07af24c933",
-    "url": "https://free.prooph-board.com/static/js/main.1393090f.chunk.js"
+    "revision": "8894db9cb979c1ef0b20",
+    "url": "https://free.prooph-board.com/static/js/main.8894db9c.chunk.js"
   },
   {
     "revision": "b99f8ec8959fdb52f2f0",
@@ -40,6 +40,10 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/icons.b87b9ba5.ttf"
   },
   {
+    "revision": "962a1bf31c081691065fe333d9fa8105",
+    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
+  },
+  {
     "revision": "701ae6abd4719e9c2ada3535a497b341",
     "url": "https://free.prooph-board.com/static/media/outline-icons.701ae6ab.eot"
   },
@@ -56,20 +60,16 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/outline-icons.ad97afd3.ttf"
   },
   {
-    "revision": "962a1bf31c081691065fe333d9fa8105",
-    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
-  },
-  {
     "revision": "82f60bd0b94a1ed68b1e6e309ce2e8c3",
     "url": "https://free.prooph-board.com/static/media/outline-icons.82f60bd0.svg"
   },
   {
-    "revision": "13db00b7a34fee4d819ab7f9838cc428",
-    "url": "https://free.prooph-board.com/static/media/brand-icons.13db00b7.eot"
-  },
-  {
     "revision": "e8c322de9658cbeb8a774b6624167c2c",
     "url": "https://free.prooph-board.com/static/media/brand-icons.e8c322de.woff2"
+  },
+  {
+    "revision": "13db00b7a34fee4d819ab7f9838cc428",
+    "url": "https://free.prooph-board.com/static/media/brand-icons.13db00b7.eot"
   },
   {
     "revision": "a046592bac8f2fd96e994733faf3858c",
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "bc7d3206178b83f54544a4b7640c385d",
+    "revision": "e9458d2acf5c2efb6c44f7b50297c388",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
