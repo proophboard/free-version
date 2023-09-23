@@ -239,6 +239,7 @@ pattern=Muster
 perimeter=Umfang
 placeholders=Platzhalter
 plusTooltip=Ziehen zum verbinden.
+codyTooltip=Klicken um Cody die passende Card vorschlagen zu lassen.
 portrait=Hochformat
 position=Position
 posterPrint=Posterdruck
