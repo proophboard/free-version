@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "fb788c7a200e4307f327",
+    "revision": "afd4620502f876e87452",
     "url": "https://free.prooph-board.com/static/css/main.06c77445.chunk.css"
   },
   {
-    "revision": "fb788c7a200e4307f327",
-    "url": "https://free.prooph-board.com/static/js/main.fb788c7a.chunk.js"
+    "revision": "afd4620502f876e87452",
+    "url": "https://free.prooph-board.com/static/js/main.afd46205.chunk.js"
   },
   {
     "revision": "c3c033d8f932d2cd53f4",
@@ -40,10 +40,6 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/icons.b87b9ba5.ttf"
   },
   {
-    "revision": "962a1bf31c081691065fe333d9fa8105",
-    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
-  },
-  {
     "revision": "701ae6abd4719e9c2ada3535a497b341",
     "url": "https://free.prooph-board.com/static/media/outline-icons.701ae6ab.eot"
   },
@@ -68,6 +64,10 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/brand-icons.13db00b7.eot"
   },
   {
+    "revision": "962a1bf31c081691065fe333d9fa8105",
+    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
+  },
+  {
     "revision": "e8c322de9658cbeb8a774b6624167c2c",
     "url": "https://free.prooph-board.com/static/media/brand-icons.e8c322de.woff2"
   },
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "b9d9958e0dbc62ff9af1e6bc89e66c48",
+    "revision": "d5d95611384d23338ad623cb2715fcbd",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];

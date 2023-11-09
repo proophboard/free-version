@@ -1992,22 +1992,6 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 				}
             }
 		})
-
-		/**
-		 * Adds locking
-		 */
-		var graphUpdateMouseEvent = this.updateMouseEvent;
-		this.updateMouseEvent = function(me)
-		{
-			me = graphUpdateMouseEvent.apply(this, arguments);
-
-			if (me.state != null && this.isCellLocked(me.getCell()))
-			{
-				me.state = null;
-			}
-
-			return me;
-		};
 	}
 
 	//Create a unique offset object for each graph instance.
@@ -8556,6 +8540,18 @@ if (typeof mxVertexHandler != 'undefined')
 			return false;
 		};
 
+		Graph.prototype.setCellStyles = function(key, value, cells)
+		{
+			cells = cells || this.getSelectionCells();
+			mxUtils.setCellStyles(this.model, cells, key, value);
+
+			if(cells && Array.isArray(cells)) {
+				cells.forEach(cell => {
+					this.syncContainerStyles(cell, key, value);
+				})
+			}
+		};
+
 		/**
 		 * Updates the child cells with placeholders if metadata of a cell has changed.
 		 */
@@ -8813,6 +8809,56 @@ if (typeof mxVertexHandler != 'undefined')
 			return null;
 		}
 
+		Graph.prototype.setContainerLocked = function(cell, locked) {
+			const state = this.view.getState(cell);
+
+			this.getModel().beginUpdate();
+			try {
+				this.setCellStyles('locked', locked? '1' : null, [cell]);
+
+				if(state && state.text && state.text.node) {
+					var tempDiv = document.createElement('div');
+					tempDiv.innerHTML = cell.getAttribute('label');
+
+					var labelChanged = false;
+
+					if(!locked) {
+						var icons = tempDiv.getElementsByClassName('boardlockicon');
+
+						if(icons && icons.length > 0) {
+							icons[0].remove();
+							labelChanged = true;
+						}
+					} else {
+						var iTag = document.createElement('i');
+						var spanTag = document.createElement('span');
+						iTag.classList.add('small', 'icon', 'lock');
+
+						spanTag.classList.add('boardlockicon');
+						spanTag.innerHTML = '&nbsp;&nbsp;';
+						spanTag.append(iTag);
+
+						var orgStyle = this.getStylesheet().getCellStyle(cell.getStyle());
+						spanTag.style.fontSize = orgStyle['fontSize'] + "px";
+
+						tempDiv.append(spanTag);
+						labelChanged = true;
+					}
+
+					if(labelChanged) {
+						this.labelChanged(cell, tempDiv.innerHTML);
+					}
+				}
+			} finally {
+				this.getModel().endUpdate();
+			}
+
+			if (locked)
+			{
+				this.removeSelectionCells(this.getModel().getDescendants(cell));
+			}
+		}
+
 		Graph.prototype.setFeatureTaskLink = function(cell, link)
 		{
 			if(!cell) {
@@ -8951,7 +8997,11 @@ if (typeof mxVertexHandler != 'undefined')
 				return;
 			}
 
+			// Temp. enable graph to allow cell selection in readonly mode
+			var isEnabled = this.isEnabled();
+			this.setEnabled(true);
 			mxGraph.prototype.click.call(this, me);
+			this.setEnabled(isEnabled);
 
 			// Stores state and source for checking in dblClick
 			this.firstClickState = me.getState();
@@ -8996,6 +9046,23 @@ if (typeof mxVertexHandler != 'undefined')
 				mxGraph.prototype.dblClick.call(this, evt, cell);
 			}
 		};
+
+		Graph.prototype.isCellDeletable = function(cell)
+		{
+			if(!this.isEnabled() || this.isCellLocked(cell)) {
+				return false;
+			}
+
+			return mxGraph.prototype.isCellDeletable.call(this, cell);
+		};
+
+		Graph.prototype.isCellEnabled = function(cell) {
+			if(!this.isEnabled() || !cell) {
+				return false;
+			}
+
+			return !this.isCellLocked(cell);
+		}
 
 		/**
 		 * Returns a point that specifies the location for inserting cells.

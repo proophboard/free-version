@@ -2339,10 +2339,10 @@ EditorUi.prototype.initCanvas = function()
 					cursorPosition = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 					var isTouchPad = mxEvent.isTouchpadZoomEvent(evt);
 
-					// Set it once to activate touchpad mode
-					if(isTouchPad && !graph.isTouchpadDetected) {
-						graph.setTouchpadDetected();
-					}
+					// Disabled, due to problems on Mac. Set it once to activate touchpad mode
+					// if(isTouchPad && !graph.isTouchpadDetected) {
+					// 	graph.setTouchpadDetected();
+					// }
 
 					if((!isTouchPad && !graph.isTouchpadPanning)
 						|| (isTouchPad && !graph.isTouchpadModeEnabled)
