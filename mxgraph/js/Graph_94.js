@@ -6082,7 +6082,7 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection)
 	{
 		if (this.currentState != null && !this.isResetEvent(evt))
 		{
-			if(codyDirection) {
+			if(codyDirection && !mxEvent.isControlDown(evt)) {
 				// Fire CB after short wait time so that editor blur can happen before
 				window.setTimeout(mxUtils.bind(this, function() {
 					switch (codyDirection) {

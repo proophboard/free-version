@@ -24,12 +24,12 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/flags.9c74e172.png"
   },
   {
-    "revision": "8e3c7f5520f5ae906c6cf6d7f3ddcd19",
-    "url": "https://free.prooph-board.com/static/media/icons.8e3c7f55.eot"
-  },
-  {
     "revision": "0ab54153eeeca0ce03978cc463b257f7",
     "url": "https://free.prooph-board.com/static/media/icons.0ab54153.woff2"
+  },
+  {
+    "revision": "8e3c7f5520f5ae906c6cf6d7f3ddcd19",
+    "url": "https://free.prooph-board.com/static/media/icons.8e3c7f55.eot"
   },
   {
     "revision": "faff92145777a3cbaf8e7367b4807987",
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "d5d95611384d23338ad623cb2715fcbd",
+    "revision": "4090e91b83e43e466cf61d89bd22e56c",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];

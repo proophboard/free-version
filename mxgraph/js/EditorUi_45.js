@@ -346,7 +346,18 @@ EditorUi = function(editor, container, lightbox, boardName, sidebarContainerId)
 								}
 
 								ui.toolbar.setFontName(ff);
-								ui.toolbar.setFontSize(parseInt(css.fontSize));
+
+								if(window.getSelection().toString() !== '') {
+									const selection = window.getSelection();
+									if (selection && selection.anchorNode) { // make sure it doesn't error if nothing is selected
+										const fs = String(window.getComputedStyle(selection.anchorNode.parentElement, null).getPropertyValue('font-size'));
+										ui.toolbar.setFontSize(parseInt(fs));
+									}
+								} else {
+									ui.toolbar.setFontSize(parseInt(css.fontSize));
+								}
+
+
 								ui.toolbar.setCellFontColor(css.color);
 
 								//Update cell background color
@@ -1171,24 +1182,7 @@ EditorUi.prototype.getBoardName = function()
 EditorUi.prototype.applyFontSize = function(fontsize) {
 	var graph = this.editor.graph;
 
-	// Creates an element with arbitrary size 3
-	document.execCommand('fontSize', false, '3');
-
-	// Changes the css font size of the first font element inside the in-place editor with size 3
-	// hopefully the above element that we've just created. LATER: Check for new element using
-	// previous result of getElementsByTagName (see other actions)
-	var elts = graph.cellEditor.textarea.getElementsByTagName('font');
-
-	for (var i = 0; i < elts.length; i++)
-	{
-		if (elts[i].getAttribute('size') == '3')
-		{
-			elts[i].removeAttribute('size');
-			elts[i].style.fontSize = fontsize + 'px';
-
-			break;
-		}
-	}
+	inspectioUtils.wrapSelectedTextNodes('span', {fontSize: fontsize + 'px'});
 
 	var cells = graph.getSelectionCells();
 	var containers = [];
@@ -1219,6 +1213,11 @@ EditorUi.prototype.applyFontSize = function(fontsize) {
 				}
 			})
 		}
+	}
+
+	if (this.toolbar != null)
+	{
+		this.toolbar.setFontSize(fontsize);
 	}
 }
 
