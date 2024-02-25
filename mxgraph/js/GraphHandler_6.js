@@ -93,7 +93,37 @@ mxGraphHandler.prototype.mouseUp = function (sender, me) {
         this.graph.mergeSchema(this.cell, me.getCell());
     }
 
+    var isSourceLocked = false;
+    var isTargetLocked = false;
+    var maybeEdge = this.cell;
+
+    if(this.graph.isCloneEvent(me.getEvent()) && maybeEdge && maybeEdge.isEdge()) {
+
+        isSourceLocked = this.graph.isCellLocked(maybeEdge.source);
+        isTargetLocked = this.graph.isCellLocked(maybeEdge.target);
+
+        if(isSourceLocked) {
+            mxClipboard.tempUnlockCell(this.graph, maybeEdge.source);
+        }
+
+        this.cells.push(maybeEdge.source);
+
+        if(isTargetLocked) {
+            mxClipboard.tempUnlockCell(this.graph, maybeEdge.target);
+        }
+
+        this.cells.push(maybeEdge.target);
+    }
+
     mxGraphHandlerMouseUp.call(this, sender, me);
+
+    if(isSourceLocked) {
+        mxClipboard.relockCell(maybeEdge.source);
+    }
+
+    if(isTargetLocked) {
+        mxClipboard.relockCell(maybeEdge.target);
+    }
 }
 
 var mxGraphHandlerCreatePreviewShape = mxGraphHandler.prototype.createPreviewShape;

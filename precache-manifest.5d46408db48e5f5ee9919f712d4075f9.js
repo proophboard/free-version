@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "9678b2906a6625d25753",
+    "revision": "af8026c94659f8ef8409",
     "url": "https://free.prooph-board.com/static/css/main.06c77445.chunk.css"
   },
   {
-    "revision": "9678b2906a6625d25753",
-    "url": "https://free.prooph-board.com/static/js/main.9678b290.chunk.js"
+    "revision": "af8026c94659f8ef8409",
+    "url": "https://free.prooph-board.com/static/js/main.af8026c9.chunk.js"
   },
   {
     "revision": "0c44632a8928349f543d",
@@ -56,24 +56,24 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/outline-icons.ad97afd3.ttf"
   },
   {
-    "revision": "82f60bd0b94a1ed68b1e6e309ce2e8c3",
-    "url": "https://free.prooph-board.com/static/media/outline-icons.82f60bd0.svg"
-  },
-  {
     "revision": "e8c322de9658cbeb8a774b6624167c2c",
     "url": "https://free.prooph-board.com/static/media/brand-icons.e8c322de.woff2"
+  },
+  {
+    "revision": "82f60bd0b94a1ed68b1e6e309ce2e8c3",
+    "url": "https://free.prooph-board.com/static/media/outline-icons.82f60bd0.svg"
   },
   {
     "revision": "13db00b7a34fee4d819ab7f9838cc428",
     "url": "https://free.prooph-board.com/static/media/brand-icons.13db00b7.eot"
   },
   {
-    "revision": "962a1bf31c081691065fe333d9fa8105",
-    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
-  },
-  {
     "revision": "a046592bac8f2fd96e994733faf3858c",
     "url": "https://free.prooph-board.com/static/media/brand-icons.a046592b.woff"
+  },
+  {
+    "revision": "962a1bf31c081691065fe333d9fa8105",
+    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
   },
   {
     "revision": "c5ebe0b32dc1b5cc449a76c4204d13bb",
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "38f25cfa8a1c7c16c1404ca5f07c6702",
+    "revision": "ac54f61d65ba2a36f71b36d838747d80",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
