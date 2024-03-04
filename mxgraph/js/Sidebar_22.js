@@ -1282,7 +1282,7 @@ Sidebar.prototype.updateShapes = function(source, targets)
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInserted, bounds, onBeforeInsertVertex, onAfterInsert)
+Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInserted, bounds, onBeforeInsertVertex, onAfterInsert, resetGeo)
 {
 	allowCellsInserted = (allowCellsInserted != null) ? allowCellsInserted : true;
 
@@ -1347,6 +1347,14 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 							//Determine position of mouse relative to scaled and transformed canvas
 							var mousePoint = graph.translateMousePoint(x, y);
 
+							// Used in prooph board graph.makeDraggable to reset x,y of copied Node
+							if(resetGeo) {
+								cells = graph.cloneCells(cells);
+								cells.forEach(cell => {
+									cell.setGeometry(new mxGeometry(bounds.x, bounds.y, bounds.width, bounds.height));
+								})
+							}
+
 							select = graph.importCells(cells, mousePoint.x, mousePoint.y, target);
 						}
 
@@ -1380,7 +1388,12 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 					}
 					catch (e)
 					{
-						this.editorUi.handleError(e);
+						if(this.editorUi.handleError) {
+							this.editorUi.handleError(e);
+						} else {
+							console.error(e);
+						}
+
 					}
 					finally
 					{
