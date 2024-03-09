@@ -240,6 +240,7 @@ perimeter=Umfang
 placeholders=Platzhalter
 plusTooltip=Ziehen zum verbinden.
 codyTooltip=Klicken um Cody die passende Card vorschlagen zu lassen. Halte Ctrl/Command gedrückt, um einen Pfeil zu zeichnen.
+newLaneTooltip=Klicken um eine neue Swimlane hinzuzufügen
 portrait=Hochformat
 position=Position
 posterPrint=Posterdruck

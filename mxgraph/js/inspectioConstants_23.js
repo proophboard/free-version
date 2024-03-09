@@ -44,8 +44,15 @@ var ispConst = {
     TAG_CONNECTED : 'pb:connected',
     TAG_DISCONNECTED : 'pb:disconnected',
     TAG_SLICE : 'pb:slice',
+    TAG_DEFAULT_SLICE : 'pb:defaultslice',
     TAG_LANE_HANDLE : 'pb:lanehandle',
     TAG_TIME_HANDLE : 'pb:timehandle',
+    TAG_SLICE_API_LABEL : 'pb:apilabel',
+    TAG_ELEMENTS_TREE_HIDDEN : 'pb:ethidden',
+
+    DEFAULT_DOC_NS : '/App',
+    DEFAULT_SLICE_LANE_HEIGHT : 300,
+    SLICE_LANE_EDGE_STYLE : 'edgeStyle=isometricEdgeStyle;html=1;startArrow=none;endArrow=none;strokeWidth=2;strokeColor=#bababa;',
 
     FILL_COLOR_TAG_IMPORTANT : '#FF9999',
     FILL_COLOR_TAG_PLANNED : '#FFE1AD',

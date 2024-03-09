@@ -10,52 +10,52 @@ function EventModelingSliceShapeXml ()
     <mxCell id="7fe80d19-d317-4e9d-8296-96c598786d78" parent="e975feae-1579-4c09-98d0-98cbf2108aec"/>
     <feature label="" type="feature" tags="pb:slice" id="mA2vXdNWByc9MfDcyrG2Q5">
       <mxCell style="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;" vertex="1" alternateStyle="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;verticalAlign=middle;fontSize=56;" originalStyle="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;" alternateStyleEnabled="0" parent="7fe80d19-d317-4e9d-8296-96c598786d78">
-        <mxGeometry x="0" y="0" width="1360" height="1520" as="geometry"/>
+        <mxGeometry x="0" y="0" width="1360" height="1478" as="geometry"/>
       </mxCell>
     </feature>
-    <UserObject label="&amp;nbsp;" tags="pb:timehandle" id="dsVaY13V9UzHGpd8xMwqXc">
-      <mxCell style="freeText;locked=1" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="1320" y="736" width="20" height="112" as="geometry"/>
+    <UserObject label="&amp;nbsp;" tags="pb:timehandle,pb:ethidden" id="dsVaY13V9UzHGpd8xMwqXc">
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="1320" y="694" width="20" height="112" as="geometry"/>
       </mxCell>
     </UserObject>
-    <icon label="" type="icon" tags="pb:connected,pb:lanehandle" id="dhic33kxZxP4LY5TWGgXoC">
-      <mxCell style="icon;locked=1;image=data:image/svg+xml,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; style=&quot;fill:#4D4D4D&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path d=&quot;M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z&quot;/&gt;&lt;/svg&gt;;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="12.945945945945823" y="775.9459459459458" width="48" height="30" as="geometry"/>
+    <icon label="" type="icon" tags="pb:connected,pb:lanehandle,pb:ethidden" id="dhic33kxZxP4LY5TWGgXoC">
+      <mxCell style="icon;locked=1;resizable=0;rotatable=0;image=data:image/svg+xml,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; style=&quot;fill:#4D4D4D&quot; viewBox=&quot;0 0 512 512&quot;&gt;&lt;path d=&quot;M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z&quot;/&gt;&lt;/svg&gt;;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="12.945945945945823" y="733.9459459459458" width="48" height="30" as="geometry"/>
       </mxCell>
     </icon>
-    <UserObject label="&amp;nbsp;" tags="pb:lanehandle" id="bbQa81UnqVcdGoGDaAKFHg">
-      <mxCell style="freeText;locked=1" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="13" y="1056" width="16" height="112" as="geometry"/>
+    <UserObject label="&amp;nbsp;" tags="pb:lanehandle,pb:ethidden" id="bbQa81UnqVcdGoGDaAKFHg">
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="13" y="1050" width="16" height="12" as="geometry"/>
       </mxCell>
     </UserObject>
-    <UserObject label="&amp;nbsp;" tags="pb:lanehandle" id="3k5XYDYFCJ3N6UnnANo1JT">
-      <mxCell style="freeText;locked=1" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="17" y="400" width="16" height="112" as="geometry"/>
+    <UserObject label="&amp;nbsp;" tags="pb:lanehandle,pb:ethidden" id="3k5XYDYFCJ3N6UnnANo1JT">
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="17" y="450" width="16" height="12" as="geometry"/>
       </mxCell>
     </UserObject>
     <role label="Anyone" type="role" tags="pb:connected,pb:lanehandle" id="4AvHEmpSe9RuusBSyVYQw">
-      <mxCell style="role;autosize=1;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="23.5" y="278" width="73" height="90" as="geometry"/>
+      <mxCell style="role;autosize=1;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="23.5" y="250" width="73" height="90" as="geometry"/>
       </mxCell>
     </role>
-    <UserObject label="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b style=&quot;font-size: 24px;&quot;&gt;&lt;font color=&quot;#4d4d4d&quot;&gt;Module&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" tags="pb:connected,pb:lanehandle" id="cfy41E6BQWW9znDCZ7stoa">
-      <mxCell style="freeText" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="10" y="942" width="150" height="100" as="geometry"/>
+    <UserObject label="Module" tags="pb:connected,pb:lanehandle" id="cfy41E6BQWW9znDCZ7stoa">
+      <mxCell style="freeText;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="10" y="850" width="150" height="100" as="geometry"/>
       </mxCell>
     </UserObject>
-    <UserObject label="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b style=&quot;font-size: 24px;&quot;&gt;&lt;font color=&quot;#4d4d4d&quot;&gt;API&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" tags="pb:connected,pb:lanehandle" id="ofT2q5tZpnnpBXYV2t82dN">
-      <mxCell style="freeText;fillColor=transparent;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="9.959459459459367" y="598" width="150" height="100" as="geometry"/>
+    <UserObject label="API" tags="pb:connected,pb:lanehandle,pb:apilabel" id="ofT2q5tZpnnpBXYV2t82dN">
+      <mxCell style="freeText;;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;fillColor=transparent;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="9.959459459459367" y="556" width="150" height="100" as="geometry"/>
       </mxCell>
     </UserObject>
-    <UserObject label="&amp;nbsp;" tags="pb:timehandle" id="7EpWcCuQxvTPAGXcuhT5Ns">
-      <mxCell style="freeText;locked=1" vertex="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="1320" y="400" width="20" height="112" as="geometry"/>
+    <UserObject label="&amp;nbsp;" tags="pb:timehandle,pb:ethidden" id="7EpWcCuQxvTPAGXcuhT5Ns">
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="1320" y="450" width="20" height="12" as="geometry"/>
       </mxCell>
     </UserObject>
-    <UserObject label="&amp;nbsp;" tags="pb:timehandle" id="whrJtCGVkgnTFGHqf1J9ft">
-      <mxCell style="freeText;locked=1" vertex="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="1320" y="1056" width="20" height="112" as="geometry"/>
+    <UserObject label="&amp;nbsp;" tags="pb:timehandle,pb:ethidden" id="whrJtCGVkgnTFGHqf1J9ft">
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="1320" y="1050" width="20" height="12" as="geometry"/>
       </mxCell>
     </UserObject>
     <UserObject label="" tags="pb:connected" id="fuqxbhtEwgcfbHXwLPdc2H">

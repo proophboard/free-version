@@ -1109,6 +1109,12 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			this.addMenuItem(menu, 'tagReady', markAs, evt, null, 'Ready', inspectioUtils.hasTag(cell, ispConst.TAG_READY));
 			this.addMenuItem(menu, 'tagDeployed', markAs, evt, null, 'Deployed', inspectioUtils.hasTag(cell, ispConst.TAG_DEPLOYED));
 
+			if(inspectioUtils.isSlice(cell)) {
+				var swimLanes = menu.addItem('Swim lanes');
+				this.addMenuItem(menu, 'change_default_slice', swimLanes, evt, null, 'Slice Blueprint', inspectioUtils.hasTag(cell, ispConst.TAG_DEFAULT_SLICE));
+				this.addMenuItem(menu, 'sync_slice_lanes', swimLanes, evt, null, 'Copy to all slicies');
+			}
+
 			var birdView = menu.addItem('Bird View');
 			this.addMenuItem(menu, 'toggleswimlane', birdView, evt, null, 'Hide Details', !inspectioUtils.isContainerSwimLane(cell));
 

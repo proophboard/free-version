@@ -1,12 +1,30 @@
 // Disable default update cursor logic, since we don't want to set cursors on cell states, but only change graph container cursor
 mxGraphHandler.prototype.updateCursor = false;
 
+const mxGraphHandlerMouseDown = mxGraphHandler.prototype.mouseDown;
+mxGraphHandler.prototype.mouseDown = function(sender, me) {
+    var cell = this.getInitialCellForEvent(me);
+
+    if(cell && cell.isEdge() && this.graph.isCellLocked(cell.source) && this.graph.isCellLocked(cell.target)) {
+        this.graph.setSelectionCells([cell, cell.source, cell.target]);
+    }
+
+    mxGraphHandlerMouseDown.call(this, sender, me);
+}
+
 mxGraphHandler.prototype.start = function(cell, x, y)
 {
     this.cell = cell;
     this.first = mxUtils.convertPoint(this.graph.container, x, y);
     this.firstT = new mxPoint(this.graph.view.translate.x, this.graph.view.translate.y);
-    this.cells = this.getCells(this.cell);
+
+    if(this.cell.isEdge() && this.graph.isCellLocked(this.cell.source) && this.graph.isCellLocked(this.cell.target)) {
+        this.cells = [this.cell, this.cell.source, this.cell.target];
+    } else {
+        this.cells = this.getCells(this.cell);
+    }
+
+
     this.bounds = this.graph.getView().getBounds(this.cells);
     this.pBounds = this.getPreviewBounds(this.cells);
     this.prevGraphCursor = this.graph.getMouseCursor();
@@ -97,8 +115,7 @@ mxGraphHandler.prototype.mouseUp = function (sender, me) {
     var isTargetLocked = false;
     var maybeEdge = this.cell;
 
-    if(this.graph.isCloneEvent(me.getEvent()) && maybeEdge && maybeEdge.isEdge()) {
-
+    if(maybeEdge && maybeEdge.isEdge()) {
         isSourceLocked = this.graph.isCellLocked(maybeEdge.source);
         isTargetLocked = this.graph.isCellLocked(maybeEdge.target);
 
@@ -106,23 +123,33 @@ mxGraphHandler.prototype.mouseUp = function (sender, me) {
             mxClipboard.tempUnlockCell(this.graph, maybeEdge.source);
         }
 
-        this.cells.push(maybeEdge.source);
+        // this.cells.push(maybeEdge.source);
 
         if(isTargetLocked) {
             mxClipboard.tempUnlockCell(this.graph, maybeEdge.target);
         }
 
-        this.cells.push(maybeEdge.target);
+        // this.cells.push(maybeEdge.target);
     }
 
     mxGraphHandlerMouseUp.call(this, sender, me);
 
     if(isSourceLocked) {
-        mxClipboard.relockCell(maybeEdge.source);
+        mxClipboard.relockCell(this.graph, maybeEdge.source);
     }
 
     if(isTargetLocked) {
-        mxClipboard.relockCell(maybeEdge.target);
+        mxClipboard.relockCell(this.graph, maybeEdge.target);
+    }
+
+    const newCells = this.graph.getSelectionCells();
+
+    if(isSourceLocked && newCells.length === 3) {
+        mxClipboard.relockCell(this.graph, newCells[1]);
+    }
+
+    if(isTargetLocked && newCells.length === 3) {
+        mxClipboard.relockCell(this.graph, newCells[2]);
     }
 }
 

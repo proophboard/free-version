@@ -94,6 +94,7 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
     this.graph.enableUserSelectOnContainer();
     mxCellEditorStartEditing.apply(this, arguments);
 
+    var scale = this.graph.getView().scale;
     this.placeCaretAtEnd(this.textarea);
 
     // Overrides class in case of HTML content to add
@@ -919,7 +920,10 @@ mxCellEditor.prototype.applyValue = function(state, value)
             existingTags = existingTags.filter(t => !deployTags.includes(t));
         }
 
-        const connectedTags = [ispConst.TAG_CONNECTED, ispConst.TAG_DISCONNECTED, ispConst.TAG_LANE_HANDLE, ispConst.TAG_TIME_HANDLE, ispConst.TAG_SLICE];
+        const connectedTags = [
+            ispConst.TAG_CONNECTED, ispConst.TAG_DISCONNECTED, ispConst.TAG_LANE_HANDLE, ispConst.TAG_TIME_HANDLE,
+            ispConst.TAG_SLICE, ispConst.TAG_DEFAULT_SLICE, ispConst.TAG_ELEMENTS_TREE_HIDDEN, ispConst.TAG_SLICE_API_LABEL,
+        ];
         existingConnectTags = existingTags.filter(t => connectedTags.includes(t));
         existingTags = existingTags.filter(t => !connectedTags.includes(t));
 

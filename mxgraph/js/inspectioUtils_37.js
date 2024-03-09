@@ -46,6 +46,191 @@ var inspectioUtils = {
         return tags.includes(ispConst.TAG_SLICE);
     },
 
+    isSliceLaneLabel: function (cell) {
+        return inspectioUtils.isSliceModuleLaneLabel(cell) || inspectioUtils.isSliceUserLaneLabel(cell);
+    },
+
+    isSliceModuleLaneLabel: function (cell) {
+        return inspectioUtils.isTextField(cell) && inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE) && (!cell.edges || cell.edges.length === 0);
+    },
+
+    isSliceLaneHandle: function (cell) {
+        return inspectioUtils.isTextField(cell) && inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE) && cell.edges && cell.edges.length === 1;
+    },
+
+    isSliceTimeHandle: function (cell) {
+        return inspectioUtils.isTextField(cell) && inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE) && cell.edges && cell.edges.length === 1;
+    },
+
+    isLastSliceModuleLaneLabel: function(cell) {
+        if(!inspectioUtils.isSliceModuleLaneLabel(cell)) {
+            return false;
+        }
+
+        const lastModuleLaneLabel = inspectioUtils.getLastSliceModuleLaneLabel(cell.parent);
+
+        return lastModuleLaneLabel && lastModuleLaneLabel === cell;
+    },
+
+    isFirstSliceUserLaneLabel: function(cell) {
+        if(!inspectioUtils.isSliceUserLaneLabel(cell)) {
+            return false;
+        }
+
+        const firstUserLaneLabel = inspectioUtils.getFirstSliceUserLaneLabel(cell.parent);
+
+        return firstUserLaneLabel && firstUserLaneLabel === cell;
+
+    },
+
+    getFirstSliceUserLaneLabel: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let firstUserLabel = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceUserLaneLabel(child)) {
+                return;
+            }
+
+            if(!firstUserLabel) {
+                firstUserLabel = child;
+            }
+
+            if(child.getGeometry().y < firstUserLabel.getGeometry().y) {
+                firstUserLabel = child;
+            }
+        })
+
+        return firstUserLabel;
+    },
+
+    getLastSliceModuleLaneLabel: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let lastModuleLabel = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceModuleLaneLabel(child)) {
+                return;
+            }
+
+            if(!lastModuleLabel) {
+                lastModuleLabel = child;
+            }
+
+            if(child.getGeometry().y > lastModuleLabel.getGeometry().y) {
+                lastModuleLabel = child;
+            }
+        })
+
+        return lastModuleLabel;
+    },
+
+    getLastSliceLaneHandle: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let lastLaneHandle = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceLaneHandle(child)) {
+                return;
+            }
+
+            if(!lastLaneHandle) {
+                lastLaneHandle = child;
+            }
+
+            if(child.getGeometry().y > lastLaneHandle.getGeometry().y) {
+                lastLaneHandle = child;
+            }
+        })
+
+        return lastLaneHandle;
+    },
+
+    getFirstSliceLaneHandle: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let firstLaneHandle = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceLaneHandle(child)) {
+                return;
+            }
+
+            if(!firstLaneHandle) {
+                firstLaneHandle = child;
+            }
+
+            if(child.getGeometry().y < firstLaneHandle.getGeometry().y) {
+                firstLaneHandle = child;
+            }
+        })
+
+        return firstLaneHandle;
+    },
+
+    getLastSliceTimeHandle: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let lastTimeHandle = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceTimeHandle(child)) {
+                return;
+            }
+
+            if(!lastTimeHandle) {
+                lastTimeHandle = child;
+            }
+
+            if(child.getGeometry().y > lastTimeHandle.getGeometry().y) {
+                lastTimeHandle = child;
+            }
+        })
+
+        return lastTimeHandle;
+    },
+
+    getFirstSliceTimeHandle: function (cell) {
+        if(!inspectioUtils.isSlice(cell)) {
+            return null;
+        }
+
+        let firstTimeHandle = null;
+
+        cell.children.forEach(child => {
+            if(!inspectioUtils.isSliceTimeHandle(child)) {
+                return;
+            }
+
+            if(!firstTimeHandle) {
+                firstTimeHandle = child;
+            }
+
+            if(child.getGeometry().y < firstTimeHandle.getGeometry().y) {
+                firstTimeHandle = child;
+            }
+        })
+
+        return firstTimeHandle;
+    },
+
+    isSliceUserLaneLabel: function (cell) {
+        return inspectioUtils.getType(cell) === ispConst.TYPE_ROLE && inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
+    },
+
     isTimeHandle: function (cell) {
         var tags = inspectioUtils.getTags(cell);
 
@@ -390,6 +575,21 @@ var inspectioUtils = {
         }
 
         return cell.value.hasAttribute('metadata') ? cell.value.getAttribute('metadata') : undefined;
+    },
+
+    setMetadata: function (cell, metadata, graph) {
+        if(cell) {
+            graph.model.beginUpdate();
+            try {
+                graph.setAttributeForCell(cell, 'metadata', metadata);
+                const cellState = graph.getCellState(cell);
+                graph.cellRenderer.redraw(cellState, false, true);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                graph.model.endUpdate();
+            }
+        }
     },
 
     joinLabelParts: function(label, secondaryText) {

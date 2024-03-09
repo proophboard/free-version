@@ -783,6 +783,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 							this.setAttributeForCell(similarCell, 'metadata', newMetadata);
 							const cellState = this.getCellState(cell);
 							this.cellRenderer.redraw(cellState, false, true);
+							this.triggerChangeActiveGraphElementIfIsActive(similarCell);
 						}
 					});
 				} catch (e) {
@@ -5764,6 +5765,356 @@ Graph.prototype.zapGremlins = function(text)
 	return checked.join('');
 };
 
+Graph.prototype.defaultSliceListeners = [];
+
+Graph.prototype.onDefaultSliceChanged = function(listener) {
+	this.defaultSliceListeners.push(listener);
+}
+
+Graph.prototype.defaultSliceChanged = function(defaultSliceCell) {
+	this.defaultSliceListeners.forEach(l => l(defaultSliceCell));
+}
+
+Graph.prototype.syncSliceLanes = function(sourceSlice) {
+	if(!inspectioUtils.isSlice(sourceSlice)) {
+		return;
+	}
+
+	const sourceX = sourceSlice.getGeometry().x;
+	const sourceY = sourceSlice.getGeometry().y;
+	const sourceWidth = sourceSlice.getGeometry().width;
+	const sourceHeight = sourceSlice.getGeometry().height;
+
+	const laneHandles = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE), sourceSlice);
+	let lanes = [];
+	let apiLabel = null;
+
+	laneHandles.forEach(handle => {
+		lanes.push(handle);
+
+		if(inspectioUtils.hasTag(handle, ispConst.TAG_SLICE_API_LABEL)) {
+			apiLabel = handle;
+		}
+
+		if(handle.edges) {
+			lanes.push(...handle.edges);
+			handle.edges.forEach(edge => lanes.push(edge.target));
+		}
+	})
+
+	lanes = lanes.filter(lane => !!lane);
+
+	this.model.beginUpdate();
+
+	try {
+		this.getAllSlices().forEach(slice => {
+			if(slice === sourceSlice) {
+				return;
+			}
+			const targetApiLabelCandidates = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_SLICE_API_LABEL), slice);
+			const childrenYDelta = apiLabel && targetApiLabelCandidates.length 
+				? (apiLabel.getGeometry().y - targetApiLabelCandidates[0].getGeometry().y)
+				: 0;
+
+			this.cleanSliceLanes(slice);
+
+			if(childrenYDelta) {
+				const vertexHandler = new mxVertexHandler(this.view.getState(slice));
+				vertexHandler.moveChildren(slice, 0, childrenYDelta);
+				vertexHandler.destroy();
+			}
+
+			const geo = slice.getGeometry();
+			const xDelta = geo.width - sourceWidth;
+			this.model.setGeometry(slice, new mxGeometry(geo.x, geo.y, geo.width, sourceHeight > geo.height ? sourceHeight : geo.height));
+			const clones = this.cloneCells(lanes, false);
+			this.moveCells(clones.filter(clone => !inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x) * -1, (sourceY - geo.y) * -1, false, slice);
+			this.moveCells(clones.filter(clone => inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x - xDelta) * -1, (sourceY - geo.y) * -1, false, slice);
+		})
+	} finally {
+		this.model.endUpdate();
+	}
+}
+
+Graph.prototype.changeDefaultSlice = function(newDefaultSlice) {
+	this.model.beginUpdate();
+	try {
+		const currentDefaultSlice = this.getDefaultSlice();
+
+		if(currentDefaultSlice) {
+			inspectioUtils.removeTag(currentDefaultSlice, ispConst.TAG_DEFAULT_SLICE, this);
+		}
+
+		inspectioUtils.addTag(newDefaultSlice, ispConst.TAG_DEFAULT_SLICE, this);
+	} finally {
+		this.model.endUpdate();
+	}
+
+	this.defaultSliceChanged(newDefaultSlice);
+}
+
+Graph.prototype.unlockHandles = function(cells) {
+	this.setCellStyles(mxConstants.STYLE_MOVABLE, '1', cells);
+	this.setCellStyles(mxConstants.STYLE_RESIZABLE, '1', cells);
+	this.setCellStyles(mxConstants.STYLE_ROTATABLE, '1', cells);
+	this.setCellStyles(mxConstants.STYLE_DELETABLE, '1', cells);
+	this.setCellStyles(mxConstants.STYLE_EDITABLE, '1', cells);
+	this.setCellStyles('connectable', '1', cells);
+	this.setCellStyles('locked', '0', cells);
+
+	cells.forEach(cell => {
+		const cellState = this.getCellState(cell);
+		this.cellRenderer.redraw(cellState, false, true);
+	})
+}
+
+Graph.prototype.cleanSliceLanes = function(slice) {
+	if(!inspectioUtils.isSlice(slice)) {
+		return;
+	}
+
+	let handles = this.model.filterDescendants(cell => {
+		if(cell.isEdge() || cell === slice) {
+			return false;
+		}
+
+		return inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE) || inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
+	}, slice);
+
+	this.unlockHandles(handles);
+	handles = this.addAllEdges(handles);
+	// Operate on graph model as this op is used to clean existing slices
+	this.cellsRemoved(handles);
+	this.fireEvent(new mxEventObject(mxEvent.REMOVE_CELLS,
+		'cells', handles, 'includeEdges', true));
+}
+
+Graph.prototype.cleanSlice = function(slice) {
+	if(!inspectioUtils.isSlice(slice)) {
+		return;
+	}
+
+	const noHandles = this.model.filterDescendants(cell => {
+		if(cell.isEdge() || cell === slice) {
+			return false;
+		}
+
+		return !inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE) && !inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
+	}, slice);
+
+	// Only operate on slice as this op is used for cloned slices
+	noHandles.forEach(noHandle => {
+		noHandle.removeFromParent();
+		if(noHandle.edges) {
+			noHandle.edges.forEach(edge => edge.removeFromParent());
+		}
+	});
+}
+
+Graph.prototype.getAllSlices = function (container) {
+	if(!container) {
+		container = this.getDefaultParent();
+	}
+
+	const slices = [];
+
+	const children = this.model.getChildren(container);
+
+	if(!children) {
+		return [];
+	}
+
+	children.forEach(child => {
+		if(inspectioUtils.isSlice(child)) {
+			slices.push(child);
+		} else if (inspectioUtils.isContainer(child)) {
+			slices.push(this.getAllSlices(child));
+		}
+	})
+
+	return slices;
+}
+
+Graph.prototype.getDefaultSlice = function (container) {
+	if(!container) {
+		container = this.getDefaultParent();
+	}
+
+	let defaultSlice = null;
+
+	const children = this.model.getChildren(container);
+
+	if(!children) {
+		return null;
+	}
+
+	children.forEach(child => {
+		if(inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_SLICE)) {
+			defaultSlice = child;
+		}
+	})
+
+	if(!defaultSlice) {
+		children.forEach(child => {
+			if(!defaultSlice && inspectioUtils.isContainer(child)) {
+				defaultSlice = this.getDefaultSlice(child);
+			}
+		})
+	}
+
+	return defaultSlice;
+}
+
+Graph.prototype.addUserLaneToSlice = function (slice, label) {
+	if(!label) {
+		label = '';
+	}
+
+	if(!inspectioUtils.isSlice(slice)) {
+		return false;
+	}
+
+	const firstLaneHandle = inspectioUtils.getFirstSliceLaneHandle(slice);
+	const firstTimeHandle = inspectioUtils.getFirstSliceTimeHandle(slice);
+	const firstUserLaneLabel = inspectioUtils.getFirstSliceUserLaneLabel(slice);
+
+	if(!firstLaneHandle) {
+		console.error("Unable to add a new user swimlane. The default user lane is missing in the slice! Cannot find the lane handle.");
+		return false;
+	}
+
+	if(!firstTimeHandle) {
+		console.error("Unable to add a new user swimlane. The default user lane is missing in the slice! Cannot find the time handle.");
+		return false;
+	}
+
+	if(!firstUserLaneLabel) {
+		console.error("Unable to add a new user swimlane. The default user lane is missing in the slice! Cannot find the top most user role card.");
+		return false;
+	}
+
+	const firstLaneY = firstLaneHandle.getGeometry().y;
+
+	const newYPosition = firstLaneY - ispConst.DEFAULT_SLICE_LANE_HEIGHT;
+
+	let newLabel = null;
+
+	this.model.beginUpdate();
+	try {
+		if((newYPosition) < (100 + ispConst.DEFAULT_SLICE_LANE_HEIGHT)) {
+			const heightDelta = (100 + ispConst.DEFAULT_SLICE_LANE_HEIGHT ) - newYPosition
+			const newSliceBounds = new mxRectangle(
+				slice.getGeometry().x,
+				slice.getGeometry().y - heightDelta,
+				slice.getGeometry().width,
+				slice.getGeometry().height + heightDelta
+			);
+
+			const vertexHandler = new mxVertexHandler(this.view.getState(slice));
+			vertexHandler.moveChildren(slice, 0, heightDelta);
+			vertexHandler.destroy();
+
+			this.resizeCell(slice, newSliceBounds, false);
+		}
+
+		const newLaneHandles = this.moveCells([firstLaneHandle, firstTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, slice);
+
+		this.insertEdge(slice, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
+
+		const newLabels = this.moveCells([firstUserLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, slice);
+		newLabel = newLabels[0];
+
+		const state = this.view.getState(newLabel, true);
+		this.view.updateCellState(state);
+
+		this.cellLabelChanged(newLabel, label, false);
+		this.setSelectionCell(newLabel);
+		this.resizeCell(newLabel, new mxRectangle(newLabel.getGeometry().x, newLabel.getGeometry().y, 70, 90));
+	} catch (e) {
+		console.error(e);
+	} finally {
+		this.model.endUpdate();
+	}
+
+	if(newLabel) {
+		window.setTimeout(() => {
+			this.startEditingAtCell(newLabel);
+		}, 100);
+
+	}
+}
+
+Graph.prototype.addModuleLaneToSlice = function (slice, label) {
+	if(!label) {
+		label = ''
+	}
+
+	if(!inspectioUtils.isSlice(slice)) {
+		return false;
+	}
+
+	const lastLaneHandle = inspectioUtils.getLastSliceLaneHandle(slice);
+	const lastTimeHandle = inspectioUtils.getLastSliceTimeHandle(slice);
+	const lastModuleLaneLabel = inspectioUtils.getLastSliceModuleLaneLabel(slice);
+
+	if(!lastLaneHandle) {
+		console.error("Unable to add a new module swimlane. The default module lane is missing in the slice! Cannot find the lane handle.");
+		return false;
+	}
+
+	if(!lastTimeHandle) {
+		console.error("Unable to add a new module swimlane. The default module lane is missing in the slice! Cannot find the time handle.");
+		return false;
+	}
+
+	if(!lastModuleLaneLabel) {
+		console.error("Unable to add a new module swimlane. The default module lane is missing in the slice! Cannot find the last module lane label.");
+		return false;
+	}
+
+	const sliceHeight = slice.getGeometry().height;
+
+	const newYPosition = lastLaneHandle.getGeometry().y + ispConst.DEFAULT_SLICE_LANE_HEIGHT;
+
+	let newLabel = null;
+
+	this.model.beginUpdate();
+	try {
+		if((newYPosition) > (sliceHeight - 150)) {
+			const newSliceBounds = new mxRectangle(
+				slice.getGeometry().x,
+				slice.getGeometry().y,
+				slice.getGeometry().width,
+				newYPosition + 150
+			);
+
+			this.resizeCell(slice, newSliceBounds, false);
+		}
+
+		const newLaneHandles = this.moveCells([lastLaneHandle, lastTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, slice);
+
+		this.insertEdge(slice, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
+
+		const newLabels = this.moveCells([lastModuleLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, slice);
+		newLabel = newLabels[0];
+		this.cellLabelChanged(newLabel, label, false);
+		this.setSelectionCell(newLabel);
+		const state = this.view.getState(newLabel, true);
+		this.view.updateCellState(state);
+	} catch (e) {
+		console.error(e);
+	} finally {
+		this.model.endUpdate();
+	}
+
+	if(newLabel) {
+		window.setTimeout(() => {
+			this.startEditingAtCell(newLabel);
+		}, 100);
+
+	}
+}
+
 /**
  * Hover icons are used for hover, vertex handler and drag from sidebar.
  */
@@ -5822,6 +6173,14 @@ HoverIcons.prototype.arrowFill = '#29b6f2';
 // HoverIcons.prototype.pr = window.devicePixelRatio;
 // Fixed devicePixelRatio because for MacBook it's 2 and this results in invisible large hover icons which overlap cards
 HoverIcons.prototype.pr = 1;
+
+/**
+ * FA Plus Icon
+ */
+HoverIcons.prototype.plus = Graph.createSvgImage(18 * HoverIcons.prototype.pr, 18 * HoverIcons.prototype.pr,'<path d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" ' +
+	'stroke="#fff" fill="' + HoverIcons.prototype.arrowFill + '"/>',
+	'viewBox="0 0 448 512"'
+	);
 
 /**
  * Up arrow.
@@ -6110,7 +6469,7 @@ HoverIcons.prototype.isResetEvent = function(evt, allowShift)
 /**
  *
  */
-HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection)
+HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection, addLaneToSlice)
 {
 	var arrow = null;
 
@@ -6152,6 +6511,10 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection)
 		arrow.setAttribute('data-cody', codyDirection);
 	}
 
+	if(addLaneToSlice) {
+		arrow.setAttribute('data-lane', '1');
+	}
+
 	arrow.style.position = 'absolute';
 	arrow.style.cursor = this.cssCursor;
 
@@ -6185,6 +6548,12 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection)
 							break;
 					}
 				}), 50);
+			} else if (addLaneToSlice) {
+				if(addLaneToSlice === 'module') {
+					this.graph.addModuleLaneToSlice(this.currentState.cell.parent);
+				} else if(addLaneToSlice === 'user') {
+					this.graph.addUserLaneToSlice(this.currentState.cell.parent);
+				}
 			} else {
 				this.activeArrow = arrow;
 				this.mouseDownPoint = mxUtils.convertPoint(this.graph.container,
@@ -6543,8 +6912,18 @@ HoverIcons.prototype.repaint = function()
 			{
 				this.arrowLeft.setAttribute('title', mxResources.get(this.arrowLeft.getAttribute('data-cody') ? 'codyTooltip' : 'plusTooltip'));
 				this.arrowRight.setAttribute('title', mxResources.get(this.arrowRight.getAttribute('data-cody') ? 'codyTooltip' : 'plusTooltip'));
-				this.arrowUp.setAttribute('title', mxResources.get(this.arrowUp.getAttribute('data-cody') ? 'codyTooltip' : 'plusTooltip'));
-				this.arrowDown.setAttribute('title', mxResources.get(this.arrowDown.getAttribute('data-cody') ? 'codyTooltip' : 'plusTooltip'));
+				this.arrowUp.setAttribute('title', mxResources.get(
+					this.arrowUp.getAttribute('data-cody')
+						? 'codyTooltip'
+						: this.arrowUp.getAttribute('data-lane')? 'newLaneTooltip' : 'plusTooltip'
+					)
+				);
+				this.arrowDown.setAttribute('title', mxResources.get(
+					this.arrowDown.getAttribute('data-cody')
+						? 'codyTooltip'
+						: this.arrowDown.getAttribute('data-lane')? 'newLaneTooltip' : 'plusTooltip'
+					)
+				);
 			}
 			else
 			{
@@ -6567,7 +6946,7 @@ HoverIcons.prototype.repaint = function()
 			// Adds tolerance for hover
 			if (this.bbox != null)
 			{
-				this.bbox.grow(10);
+				this.bbox.grow(20);
 			}
 		}
 	}
@@ -6715,6 +7094,32 @@ HoverIcons.prototype.update = function(state, x, y)
 HoverIcons.prototype.setCurrentState = function(state)
 {
 	this.currentState = state;
+
+	if(inspectioUtils.isTextField(state.cell) && inspectioUtils.isLastSliceModuleLaneLabel(state.cell)) {
+		this.refreshArrows();
+		this.arrowDown = this.createArrow(this.plus, mxResources.get('newLaneTooltip'), undefined, 'module');
+		this.arrowDown = this.createArrow(this.plus, mxResources.get('newLaneTooltip'), undefined, 'module');
+		this.graph.container.appendChild(this.arrowDown);
+		this.elts = [this.arrowDown];
+		return;
+	}
+
+	if(inspectioUtils.isSliceUserLaneLabel(state.cell) && inspectioUtils.isFirstSliceUserLaneLabel(state.cell)) {
+		this.refreshArrows();
+		this.arrowUp = this.createArrow(this.plus, mxResources.get('newLaneTooltip'), undefined, 'user');
+		this.graph.container.appendChild(this.arrowUp);
+		this.elts = [this.arrowUp];
+		return;
+	}
+
+	if(inspectioUtils.isTextField(state.cell) && inspectioUtils.isSliceModuleLaneLabel(state.cell)) {
+		return;
+	}
+
+	if(inspectioUtils.isSliceUserLaneLabel(state.cell)) {
+		return;
+	}
+
 	this.graph.updateCodySuggestions(state.cell);
 	this.refreshArrows();
 
@@ -8015,6 +8420,37 @@ if (typeof mxVertexHandler != 'undefined')
 			this.triggerChangeActiveGraphElementIfIsActive(cell);
 		}
 
+		const mxGraphGetMovableCells = mxGraph.prototype.getMovableCells;
+		mxGraph.prototype.getMovableCells = function (cells) {
+			if(cells.length === 1 && cells[0].isEdge()) {
+				if(this.isCellLocked(cells[0].source) && this.isCellLocked(cells[0].target)) {
+					return [cells[0], cells[0].source, cells[0].target];
+				}
+			}
+
+			return mxGraphGetMovableCells.call(this, cells);
+		}
+
+
+		const mxGraphRemoveCells = mxGraph.prototype.removeCells;
+		mxGraph.prototype.removeCells = function(cells, includeEdges) {
+			if(cells.length) {
+				const maybeEdge = cells[0];
+
+				if(maybeEdge.isEdge() && this.isCellLocked(maybeEdge.source)) {
+					mxClipboard.tempUnlockCell(this, maybeEdge.source);
+					cells.push(maybeEdge.source);
+				}
+
+				if(maybeEdge.isEdge() && this.isCellLocked(maybeEdge.target)) {
+					mxClipboard.tempUnlockCell(this, maybeEdge.target);
+					cells.push(maybeEdge.target);
+				}
+			}
+
+			return mxGraphRemoveCells.call(this, cells, includeEdges);
+		}
+
 		mxGraph.prototype.importCells = function(cells, dx, dy, target, evt, mapping)
 		{
 			var importedCells = this.moveCells(cells, dx, dy, true, target, evt, mapping);
@@ -8252,6 +8688,15 @@ if (typeof mxVertexHandler != 'undefined')
 					this.model.endUpdate();
 				}
 			}
+
+			if(this.eventModelingEnabled) {
+				const defaultSlice = this.getDefaultSlice();
+
+				if(defaultSlice) {
+					this.defaultSliceChanged(defaultSlice);
+				}
+			}
+
 
 			return cells;
 		};
@@ -8812,6 +9257,11 @@ if (typeof mxVertexHandler != 'undefined')
 					tmp.setAttribute('label', value);
 					value = tmp;
 				}
+
+				if(inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE) && cell.parent && inspectioUtils.hasTag(cell.parent, ispConst.TAG_DEFAULT_SLICE)) {
+					this.defaultSliceChanged(cell.parent);
+				}
+
 
 				mxGraph.prototype.cellLabelChanged.apply(this, arguments);
 			}

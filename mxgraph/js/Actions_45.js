@@ -597,6 +597,36 @@ Actions.prototype.init = function()
 		}
 	});
 
+	this.addAction('change_default_slice', function() {
+		var graph = ui.editor.graph;
+
+		if (!graph.isEnabled() || !graph.linkTaskListener) {
+			return;
+		}
+
+		var cells = graph.getSelectionCells();
+
+		if(cells && cells.length > 0) {
+			var cell = cells[0];
+			graph.changeDefaultSlice(cell);
+		}
+	});
+
+	this.addAction('sync_slice_lanes', function() {
+		var graph = ui.editor.graph;
+
+		if (!graph.isEnabled() || !graph.linkTaskListener) {
+			return;
+		}
+
+		var cells = graph.getSelectionCells();
+
+		if(cells && cells.length > 0) {
+			var cell = cells[0];
+			graph.syncSliceLanes(cell);
+		}
+	});
+
 	var isDataUrl = function (imageUrl) {
 		return imageUrl.includes('data:image/');
 	};

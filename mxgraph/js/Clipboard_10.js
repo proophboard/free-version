@@ -69,38 +69,11 @@ mxClipboard.relockCell = function (graph, cell) {
 mxClipboard.copy = function (graph, cells) {
     cells = cells || graph.getSelectionCells();
 
-    var isSourceLocked = false;
-    var isTargetLocked = false;
-
-    if(cells.length === 1 && cells[0].isEdge()) {
-        var edge = cells[0];
-
-        isSourceLocked = graph.isCellLocked(edge.source);
-        isTargetLocked = graph.isCellLocked(edge.target);
-
-        if(isSourceLocked) {
-            mxClipboard.tempUnlockCell(graph, edge.source);
-        }
-        cells.push(edge.source);
-
-        if(isTargetLocked) {
-            mxClipboard.tempUnlockCell(graph, edge.target);
-        }
-
-        cells.push(edge.target);
-    }
 
     var result = graph.getExportableCells(graph.model.getTopmostCells(cells));
     mxClipboard.insertCount = 1;
     mxClipboard.setCells(graph.cloneCells(result));
 
-    if(isSourceLocked) {
-        mxClipboard.relockCell(cells[0].source);
-    }
-
-    if(isTargetLocked) {
-        mxClipboard.relockCell(cells[0].target);
-    }
 
     return result;
 }

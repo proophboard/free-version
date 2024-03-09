@@ -993,14 +993,14 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// this.createVertexTemplateEntry(ispConst.TYPE_PROJECTION, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_PROJECTION, ''), 'Projection', null, null, 'projection', undefined, undefined, thumbStyle(ispConst.TYPE_PROJECTION_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_AGGREGATE, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_AGGREGATE, ''), 'Business Rules', null, null, 'aggregate entity', undefined, undefined, thumbStyle(ispConst.TYPE_AGGREGATE_THUMB)),
         // @TODO: Rename Document -> Information, for now only title is changed
-		this.createVertexTemplateEntry(ispConst.TYPE_DOCUMENT, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_DOCUMENT, ''), 'Information', null, null, 'data type read model document information', undefined, undefined, thumbStyle(ispConst.TYPE_DOCUMENT_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_DOCUMENT, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_DOCUMENT, ''), 'Information', null, null, 'data type read model document information', mxUtils.bind(this, this.initInformationCard), undefined, thumbStyle(ispConst.TYPE_DOCUMENT_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_POLICY, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_POLICY, ''), 'Processor', null, null, 'policy process manager', undefined, undefined, thumbStyle(ispConst.TYPE_POLICY_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_HOT_SPOT, rhombus.width, rhombus.height, this.createVertexXmlValue(ispConst.TYPE_HOT_SPOT, ''), 'Hot Spot', null, null, 'hotspot hot spot', undefined, undefined, thumbStyle(ispConst.TYPE_HOT_SPOT_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_EXTERNAL_SYSTEM, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_EXTERNAL_SYSTEM, ''), 'External System', null, null, 'external system', undefined, undefined, thumbStyle(ispConst.TYPE_EXTERNAL_SYSTEM_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_UI, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_UI, ''), 'UI  / API', null, null, 'UI', undefined, undefined, thumbStyle(ispConst.TYPE_UI_THUMB)),
 
 		this.graph.eventModelingEnabled ?
-			this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 1360, 1520, EventModelingSliceShapeXml(), 'Slice', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_SLICE_THUMB), undefined, true)
+			this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 1360, 1478, EventModelingSliceShapeXml(), 'Slice', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_SLICE_THUMB), undefined, true)
 			:
 			this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 740, 200, this.createVertexXmlValue(ispConst.TYPE_FEATURE, ''), 'Feature', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_FEATURE_THUMB)),
 
@@ -1020,6 +1020,12 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 Sidebar.prototype.initContainer = function (container)
 {
 	inspectioUtils.initContainer(container, this.editorUi.editor.graph);
+}
+
+Sidebar.prototype.initInformationCard = function (cell)
+{
+	// All Information cards get Namespace "/Information" by default. That's easier to handle for newcomers
+	inspectioUtils.setMetadata(cell, '{"ns": "'+ ispConst.DEFAULT_DOC_NS +'"}', this.editorUi.editor.graph);
 }
 
 Sidebar.prototype.createVertexXmlValue = function (vertexType, vertexValue, attributes)
@@ -1143,7 +1149,7 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 /**
  * Creates and returns a new palette item for the given image.
  */
-Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, onBeforeInsertVertex, cellType, thumbStyle, onAfterInsert)
+Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, onBeforeInsertVertex, cellType, thumbStyle, onAfterInsert, defaultSliceChanged)
 {
 	var elt = document.createElement('a');
 	elt.className = 'geItem';
@@ -1172,6 +1178,34 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 
 	if (cells.length > 1 || cells[0].vertex)
 	{
+		// @TODO: add listener to this.graph.onDefaultSliceChanged to create a new item that replaces current item (elt.replaceWith(newElt))
+
+		if(inspectioUtils.isSlice(cells[0])) {
+			if(!defaultSliceChanged) {
+				this.graph.onDefaultSliceChanged((dS) => {
+					dS = this.graph.cloneCell(dS);
+
+					const xDelta = dS.getGeometry().width - width;
+					inspectioUtils.removeTag(dS, ispConst.TAG_DEFAULT_SLICE, this.graph);
+					this.graph.model.setGeometry(dS, new mxGeometry(0, 0, width, dS.getGeometry().height));
+
+					const allTimeHandle = this.graph.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE), dS);
+					this.graph.moveCells(allTimeHandle, xDelta * -1, 0, false);
+					this.graph.cleanSlice(dS);
+					this.graph.showAll(dS);
+
+					const newElt = this.createItem([dS], title, showLabel, showTitle, width, dS.getGeometry().height, allowCellsInserted, onBeforeInsertVertex, cellType, thumbStyle, onAfterInsert, true);
+					elt.replaceWith(newElt);
+					elt = newElt;
+				});
+
+				const defaultSlice = this.graph.getDefaultSlice();
+				if(!defaultSlice) {
+					inspectioUtils.addTag(cells[0], ispConst.TAG_DEFAULT_SLICE, this.graph);
+				}
+			}
+		}
+
 		var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted,
 			bounds, onBeforeInsertVertex, onAfterInsert), this.createDragPreview(width, height, cellType), cells, bounds);
 		this.addClickHandler(elt, ds, cells, onAfterInsert, onBeforeInsertVertex);

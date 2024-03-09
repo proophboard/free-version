@@ -240,6 +240,7 @@ perimeter=Perimeter
 placeholders=Placeholders
 plusTooltip=Drag to connect.
 codyTooltip=Click to let Cody suggest next card. Press Ctrl/Command to draw an arrow.
+newLaneTooltip=Click to add a new lane
 portrait=Portrait
 position=Position
 posterPrint=Poster Print
