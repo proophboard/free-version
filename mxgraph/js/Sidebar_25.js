@@ -1193,6 +1193,11 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 					this.graph.moveCells(allTimeHandle, xDelta * -1, 0, false);
 					this.graph.cleanSlice(dS);
 					this.graph.showAll(dS);
+					const cellStyle = mxUtils.setStyle(dS.getStyle(), mxConstants.STYLE_FILLCOLOR, ispConst.FILL_COLOR_DEFAULT_FEATURE);
+					this.graph.setCellStyle(cellStyle, [dS]);
+					this.graph.syncContainerStyles(dS, mxConstants.STYLE_FILLCOLOR, ispConst.FILL_COLOR_DEFAULT_FEATURE);
+					inspectioUtils.removeAndAddTags(dS, [ispConst.TAG_IMPORTANT, ispConst.TAG_PLANNED, ispConst.TAG_READY, ispConst.TAG_DEPLOYED], [], this.graph);
+					this.graph.cellLabelChanged(dS, '', false);
 
 					const newElt = this.createItem([dS], title, showLabel, showTitle, width, dS.getGeometry().height, allowCellsInserted, onBeforeInsertVertex, cellType, thumbStyle, onAfterInsert, true);
 					elt.replaceWith(newElt);

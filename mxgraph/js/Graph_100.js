@@ -5928,7 +5928,7 @@ Graph.prototype.getAllSlices = function (container) {
 		if(inspectioUtils.isSlice(child)) {
 			slices.push(child);
 		} else if (inspectioUtils.isContainer(child)) {
-			slices.push(this.getAllSlices(child));
+			slices.push(...this.getAllSlices(child));
 		}
 	})
 
