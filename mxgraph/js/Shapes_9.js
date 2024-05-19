@@ -44,8 +44,8 @@ function EventModelingSliceShapeXml ()
       </mxCell>
     </UserObject>
     <UserObject label="" tags="pb:connected,pb:lanehandle,pb:apilabel,pb:ethidden" id="ofT2q5tZpnnpBXYV2t82dN">
-      <mxCell style="freeText;;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;fillColor=transparent;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="9.959459459459367" y="556" width="150" height="100" as="geometry"/>
+      <mxCell style="freeText;locked=1;resizable=0;rotatable=0;fillColor=transparent;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="9.959459459459367" y="556" width="1" height="100" as="geometry"/>
       </mxCell>
     </UserObject>
     <UserObject label="&amp;nbsp;" tags="pb:timehandle,pb:ethidden" id="7EpWcCuQxvTPAGXcuhT5Ns">

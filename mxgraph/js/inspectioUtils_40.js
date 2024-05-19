@@ -323,6 +323,10 @@ var inspectioUtils = {
     },
 
     canBeChildOf: function (containerType, cell) {
+        if(inspectioUtils.isChild(cell) && (inspectioUtils.isLaneHandle(cell) || inspectioUtils.isTimeHandle(cell))) {
+            return false;
+        }
+
         return true;
     },
 
