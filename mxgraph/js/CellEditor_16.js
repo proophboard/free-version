@@ -922,7 +922,7 @@ mxCellEditor.prototype.applyValue = function(state, value)
 
         const connectedTags = [
             ispConst.TAG_CONNECTED, ispConst.TAG_DISCONNECTED, ispConst.TAG_LANE_HANDLE, ispConst.TAG_TIME_HANDLE,
-            ispConst.TAG_SLICE, ispConst.TAG_DEFAULT_SLICE, ispConst.TAG_ELEMENTS_TREE_HIDDEN, ispConst.TAG_SLICE_API_LABEL,
+            ispConst.TAG_SLICE, ispConst.TAG_EVENT_MODEL, ispConst.TAG_DEFAULT_SLICE, ispConst.TAG_DEFAULT_EVENT_MODEL, ispConst.TAG_ELEMENTS_TREE_HIDDEN, ispConst.TAG_SLICE_API_LABEL,
         ];
         existingConnectTags = existingTags.filter(t => connectedTags.includes(t));
         existingTags = existingTags.filter(t => !connectedTags.includes(t));

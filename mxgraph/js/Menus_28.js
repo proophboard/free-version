@@ -1109,10 +1109,10 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			this.addMenuItem(menu, 'tagReady', markAs, evt, null, 'Ready', inspectioUtils.hasTag(cell, ispConst.TAG_READY));
 			this.addMenuItem(menu, 'tagDeployed', markAs, evt, null, 'Deployed', inspectioUtils.hasTag(cell, ispConst.TAG_DEPLOYED));
 
-			if(inspectioUtils.isSlice(cell)) {
+			if(inspectioUtils.isEventModel(cell)) {
 				var swimLanes = menu.addItem('Swim lanes');
-				this.addMenuItem(menu, 'change_default_slice', swimLanes, evt, null, 'Slice Blueprint', inspectioUtils.hasTag(cell, ispConst.TAG_DEFAULT_SLICE));
-				this.addMenuItem(menu, 'sync_slice_lanes', swimLanes, evt, null, 'Copy to all slicies');
+				this.addMenuItem(menu, 'change_default_event_model', swimLanes, evt, null, 'Blueprint', inspectioUtils.hasTag(cell, ispConst.TAG_DEFAULT_SLICE) || inspectioUtils.hasTag(cell, ispConst.TAG_DEFAULT_EVENT_MODEL));
+				this.addMenuItem(menu, 'sync_slice_lanes', swimLanes, evt, null, 'Copy to all Event Models');
 			}
 
 			var birdView = menu.addItem('Bird View');

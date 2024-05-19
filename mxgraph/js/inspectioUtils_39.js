@@ -41,9 +41,13 @@ var inspectioUtils = {
     },
 
     isSlice: function (cell) {
-        var tags = inspectioUtils.getTags(cell);
+        return inspectioUtils.isFeature(cell);
+    },
 
-        return tags.includes(ispConst.TAG_SLICE);
+    isEventModel: function (cell) {
+      var tags = inspectioUtils.getTags(cell);
+
+      return tags.includes(ispConst.TAG_EVENT_MODEL) || tags.includes(ispConst.TAG_SLICE) /* First impl. included Swimlanes in Slices, this check is for keeping BC */;
     },
 
     isSliceLaneLabel: function (cell) {
@@ -84,7 +88,7 @@ var inspectioUtils = {
     },
 
     getFirstSliceUserLaneLabel: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -108,7 +112,7 @@ var inspectioUtils = {
     },
 
     getLastSliceModuleLaneLabel: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -132,7 +136,7 @@ var inspectioUtils = {
     },
 
     getLastSliceLaneHandle: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -156,7 +160,7 @@ var inspectioUtils = {
     },
 
     getFirstSliceLaneHandle: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -180,7 +184,7 @@ var inspectioUtils = {
     },
 
     getLastSliceTimeHandle: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -204,7 +208,7 @@ var inspectioUtils = {
     },
 
     getFirstSliceTimeHandle: function (cell) {
-        if(!inspectioUtils.isSlice(cell)) {
+        if(!inspectioUtils.isEventModel(cell)) {
             return null;
         }
 
@@ -228,7 +232,7 @@ var inspectioUtils = {
     },
 
     isSliceUserLaneLabel: function (cell) {
-        return inspectioUtils.getType(cell) === ispConst.TYPE_ROLE && inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
+        return (inspectioUtils.getType(cell) === ispConst.TYPE_ROLE || inspectioUtils.getType(cell) === ispConst.TYPE_FREE_TEXT) && inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
     },
 
     isTimeHandle: function (cell) {
@@ -636,6 +640,10 @@ var inspectioUtils = {
         const orgStyle = graph.getStylesheet().getCellStyle(container.getStyle());
         let alternateStyle = mxUtils.setStyle(container.getStyle(), 'verticalAlign', orgStyle['alternateVerticalAlign']);
         alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', orgStyle['alternateFontSize']);
+
+        if(orgStyle['alternateFillColor']) {
+            alternateStyle = mxUtils.setStyle(alternateStyle, 'fillColor', orgStyle['alternateFillColor']);
+        }
         container.alternateStyle = alternateStyle;
         container.originalStyle = container.getStyle();
         if(!doNotAssignNewId) {

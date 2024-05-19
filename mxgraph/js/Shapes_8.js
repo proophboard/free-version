@@ -8,11 +8,11 @@ function EventModelingSliceShapeXml ()
   <root>
     <mxCell id="e975feae-1579-4c09-98d0-98cbf2108aec"/>
     <mxCell id="7fe80d19-d317-4e9d-8296-96c598786d78" parent="e975feae-1579-4c09-98d0-98cbf2108aec"/>
-    <feature label="" type="feature" tags="pb:slice" id="mA2vXdNWByc9MfDcyrG2Q5">
-      <mxCell style="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;" vertex="1" alternateStyle="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;verticalAlign=middle;fontSize=56;" originalStyle="feature;fillColor=#E6E6E6;;rounded=1;arcSize=5;" alternateStyleEnabled="0" parent="7fe80d19-d317-4e9d-8296-96c598786d78">
+    <boundedContext label="" type="boundedContext" tags="pb:eventmodel" id="mA2vXdNWByc9MfDcyrG2Q5">
+      <mxCell style="boundedContext;fillColor=none;rounded=1;arcSize=5;" vertex="1" parent="7fe80d19-d317-4e9d-8296-96c598786d78">
         <mxGeometry x="0" y="0" width="1360" height="1478" as="geometry"/>
       </mxCell>
-    </feature>
+    </boundedContext>
     <UserObject label="&amp;nbsp;" tags="pb:timehandle,pb:ethidden" id="dsVaY13V9UzHGpd8xMwqXc">
       <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
         <mxGeometry x="1320" y="694" width="20" height="112" as="geometry"/>
@@ -32,18 +32,18 @@ function EventModelingSliceShapeXml ()
       <mxCell style="freeText;locked=1;resizable=0;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
         <mxGeometry x="17" y="450" width="16" height="12" as="geometry"/>
       </mxCell>
-    </UserObject>
-    <role label="Anyone" type="role" tags="pb:connected,pb:lanehandle" id="4AvHEmpSe9RuusBSyVYQw">
-      <mxCell style="role;autosize=1;rotatable=0" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
-        <mxGeometry x="23.5" y="250" width="73" height="90" as="geometry"/>
+    </UserObject>    
+    <UserObject label="Role" tags="pb:connected,pb:lanehandle" id="4AvHEmpSe9RuusBSyVYQw">
+      <mxCell style="freeText;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
+        <mxGeometry x="10" y="250" width="150" height="100" as="geometry"/>
       </mxCell>
-    </role>
+    </UserObject>
     <UserObject label="Module" tags="pb:connected,pb:lanehandle" id="cfy41E6BQWW9znDCZ7stoa">
       <mxCell style="freeText;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
         <mxGeometry x="10" y="850" width="150" height="100" as="geometry"/>
       </mxCell>
     </UserObject>
-    <UserObject label="API" tags="pb:connected,pb:lanehandle,pb:apilabel" id="ofT2q5tZpnnpBXYV2t82dN">
+    <UserObject label="" tags="pb:connected,pb:lanehandle,pb:apilabel,pb:ethidden" id="ofT2q5tZpnnpBXYV2t82dN">
       <mxCell style="freeText;;fontSize=24;fontColor=#4d4d4d;fontStyle=1;align=left;fillColor=transparent;" vertex="1" tempVisible="1" parent="mA2vXdNWByc9MfDcyrG2Q5">
         <mxGeometry x="9.959459459459367" y="556" width="150" height="100" as="geometry"/>
       </mxCell>

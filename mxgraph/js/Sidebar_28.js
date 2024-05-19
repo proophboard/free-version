@@ -273,7 +273,7 @@ Sidebar.prototype.showTooltip = function(elt, cells, w, h, title, showLabel)
 				var firstCell = cells[0];
 				var isSlice = false;
 				if(firstCell) {
-					if(inspectioUtils.isContainer(firstCell) && !inspectioUtils.isSlice(firstCell)) {
+					if(inspectioUtils.isContainer(firstCell) && !inspectioUtils.isEventModel(firstCell)) {
 						firstCell = this.graph.cloneCell(firstCell);
 						this.graph2.model.setGeometry(firstCell, new mxGeometry(0, 0, 160, 100));
 						cells = [firstCell];
@@ -290,13 +290,13 @@ Sidebar.prototype.showTooltip = function(elt, cells, w, h, title, showLabel)
 						}
 					}
 
-					if(inspectioUtils.isSlice(firstCell)) {
+					if(inspectioUtils.isEventModel(firstCell)) {
 						const stylesheet = this.editorUi.editor.graph.getStylesheet();
-						var thumbStyle = stylesheet.styles[ispConst.TYPE_SLICE_THUMB];
+						var thumbStyle = stylesheet.styles[ispConst.TYPE_SWIMLANES_THUMB];
 
 						if (thumbStyle) {
 							isSlice = true;
-							firstCell = new mxCell('', new mxGeometry(0, 0, 150, 100), ispConst.TYPE_SLICE_THUMB);
+							firstCell = new mxCell('', new mxGeometry(0, 0, 170, 100), ispConst.TYPE_SWIMLANES_THUMB);
 							firstCell.vertex = true;
 							cells = [firstCell];
 						}
@@ -988,25 +988,19 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 	var fns = [
         this.createVertexTemplateEntry(ispConst.TYPE_EVENT, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_EVENT, ''), 'Domain Event', null, null, 'message domain event', undefined, undefined, thumbStyle(ispConst.TYPE_EVENT_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_COMMAND, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_COMMAND, ''), 'Command', null, null, 'message command action', undefined, undefined, thumbStyle(ispConst.TYPE_COMMAND_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_ROLE, small.width, small.height, this.createVertexXmlValue(ispConst.TYPE_ROLE, ''), 'Actor', null, null, 'user role actor people', undefined, undefined, thumbStyle(ispConst.TYPE_ROLE_THUMB)),
-        // @TODO: Check over time if projection sticky is needed. Disabled for now, as it is not part of Event Storming semantics and might be confusing
-		// this.createVertexTemplateEntry(ispConst.TYPE_PROJECTION, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_PROJECTION, ''), 'Projection', null, null, 'projection', undefined, undefined, thumbStyle(ispConst.TYPE_PROJECTION_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_AGGREGATE, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_AGGREGATE, ''), 'Business Rules', null, null, 'aggregate entity', undefined, undefined, thumbStyle(ispConst.TYPE_AGGREGATE_THUMB)),
-        // @TODO: Rename Document -> Information, for now only title is changed
+		// @TODO: Rename Document -> Information, for now only title is changed
 		this.createVertexTemplateEntry(ispConst.TYPE_DOCUMENT, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_DOCUMENT, ''), 'Information', null, null, 'data type read model document information', mxUtils.bind(this, this.initInformationCard), undefined, thumbStyle(ispConst.TYPE_DOCUMENT_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_POLICY, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_POLICY, ''), 'Processor', null, null, 'policy process manager', undefined, undefined, thumbStyle(ispConst.TYPE_POLICY_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_HOT_SPOT, rhombus.width, rhombus.height, this.createVertexXmlValue(ispConst.TYPE_HOT_SPOT, ''), 'Hot Spot', null, null, 'hotspot hot spot', undefined, undefined, thumbStyle(ispConst.TYPE_HOT_SPOT_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_EXTERNAL_SYSTEM, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_EXTERNAL_SYSTEM, ''), 'External System', null, null, 'external system', undefined, undefined, thumbStyle(ispConst.TYPE_EXTERNAL_SYSTEM_THUMB)),
-        this.createVertexTemplateEntry(ispConst.TYPE_UI, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_UI, ''), 'UI  / API', null, null, 'UI', undefined, undefined, thumbStyle(ispConst.TYPE_UI_THUMB)),
-
-		this.graph.eventModelingEnabled ?
-			this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 1360, 1478, EventModelingSliceShapeXml(), 'Slice', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_SLICE_THUMB), undefined, true)
-			:
-			this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 740, 200, this.createVertexXmlValue(ispConst.TYPE_FEATURE, ''), 'Feature', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_FEATURE_THUMB)),
-
-
+		// @TODO: Check over time if projection sticky is needed. Disabled for now, as it is not part of Event Storming semantics and might be confusing
+		this.createVertexTemplateEntry(ispConst.TYPE_UI, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_UI, ''), 'UI  / API', null, null, 'UI', undefined, undefined, thumbStyle(ispConst.TYPE_UI_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_POLICY, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_POLICY, ''), 'Processor', null, null, 'policy process manager', undefined, undefined, thumbStyle(ispConst.TYPE_POLICY_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_AGGREGATE, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_AGGREGATE, ''), 'Business Rules', null, null, 'aggregate entity', undefined, undefined, thumbStyle(ispConst.TYPE_AGGREGATE_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_EXTERNAL_SYSTEM, rect.width, rect.height, this.createVertexXmlValue(ispConst.TYPE_EXTERNAL_SYSTEM, ''), 'External System', null, null, 'external system', undefined, undefined, thumbStyle(ispConst.TYPE_EXTERNAL_SYSTEM_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_HOT_SPOT, rhombus.width, rhombus.height, this.createVertexXmlValue(ispConst.TYPE_HOT_SPOT, ''), 'Hot Spot', null, null, 'hotspot hot spot', undefined, undefined, thumbStyle(ispConst.TYPE_HOT_SPOT_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_ROLE, small.width, small.height, this.createVertexXmlValue(ispConst.TYPE_ROLE, ''), 'Role', null, null, 'user role actor people', undefined, undefined, thumbStyle(ispConst.TYPE_ROLE_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_FEATURE, 740, 200, this.createVertexXmlValue(ispConst.TYPE_FEATURE, ''), 'Feature / Slice', null, null, ispConst.TYPE_FEATURE, mxUtils.bind(this, this.initContainer), ispConst.TYPE_FEATURE, thumbStyle(ispConst.TYPE_FEATURE_THUMB)),
         this.createVertexTemplateEntry(ispConst.TYPE_BC, 800, 600, this.createVertexXmlValue(ispConst.TYPE_BC, ''), 'Context / Module', null, null, ispConst.TYPE_BC, mxUtils.bind(this, this.initContainer), ispConst.TYPE_BC, thumbStyle(ispConst.TYPE_BC_THUMB)),
-	 	this.createVertexTemplateEntry(ispConst.TYPE_FREE_TEXT, 150, 100, '', 'Text', null, null, 'text textbox textarea label', undefined, undefined, thumbStyle(ispConst.TYPE_FREE_TEXT_THUMB)),
+		this.createVertexTemplateEntry(ispConst.TYPE_BC, 1360, 1478, EventModelingSliceShapeXml(), 'Swimlanes', null, null, ispConst.TYPE_BC, mxUtils.bind(this, this.initContainer), ispConst.TYPE_BC, thumbStyle(ispConst.TYPE_SWIMLANES_THUMB), undefined, true),
+		this.createVertexTemplateEntry(ispConst.TYPE_FREE_TEXT, 150, 100, '', 'Text', null, null, 'text textbox textarea label', undefined, undefined, thumbStyle(ispConst.TYPE_FREE_TEXT_THUMB)),
 	 	//this.createVertexTemplateEntry(ispConst.TYPE_TEXT_CARD, 250, 220, '<h1>Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>', 'Text Card', null, null, 'text textbox textarea', undefined, undefined, thumbStyle(ispConst.TYPE_TEXT_CARD_THUMB)),
 		this.createVertexTemplateEntry(ispConst.TYPE_IMAGE, square.width * 3, square.height * 3, this.createVertexXmlValue(ispConst.TYPE_IMAGE, ''), 'Image', null, null, 'UI', undefined, undefined, thumbStyle(ispConst.TYPE_IMAGE_THUMB), insertImageHook),
 		this.createVertexTemplateEntry(ispConst.TYPE_ICON, square.width, square.height, this.createVertexXmlValue(ispConst.TYPE_ICON, ''), 'Icon', null, null, 'icon', undefined, undefined, thumbStyle(ispConst.TYPE_ICON_THUMB), insertIconHook),
@@ -1067,6 +1061,11 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 	if (thumbStyle) {
 		thumbs = [new mxCell(cells[0].getValue(), new mxGeometry(0, 0, realWidth, realHeight), thumbStyle)];
 		thumbs[0].vertex = true;
+	}
+
+	if(inspectioUtils.isEventModel(firstCell)) {
+		width = 36;
+		height = 36;
 	}
 
 	this.graph.labelsVisible = (showLabel == null || showLabel);
@@ -1180,9 +1179,9 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	{
 		// @TODO: add listener to this.graph.onDefaultSliceChanged to create a new item that replaces current item (elt.replaceWith(newElt))
 
-		if(inspectioUtils.isSlice(cells[0])) {
+		if(inspectioUtils.isEventModel(cells[0])) {
 			if(!defaultSliceChanged) {
-				this.graph.onDefaultSliceChanged((dS) => {
+				this.graph.onDefaultEventModelChanged((dS) => {
 					if(!this.graph) {
 						// @TODO: currently workaround for moving back to board overview and opening another board
 						// event handler should be detached on graph or sidebar destroy
@@ -1192,6 +1191,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 
 					const xDelta = dS.getGeometry().width - width;
 					inspectioUtils.removeTag(dS, ispConst.TAG_DEFAULT_SLICE, this.graph);
+					inspectioUtils.removeTag(dS, ispConst.TAG_DEFAULT_EVENT_MODEL, this.graph);
 					this.graph.model.setGeometry(dS, new mxGeometry(0, 0, width, dS.getGeometry().height));
 
 					const allTimeHandle = this.graph.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE), dS);
@@ -1209,9 +1209,9 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 					elt = newElt;
 				});
 
-				const defaultSlice = this.graph.getDefaultSlice();
-				if(!defaultSlice) {
-					inspectioUtils.addTag(cells[0], ispConst.TAG_DEFAULT_SLICE, this.graph);
+				const defaultEventModel = this.graph.getDefaultEventModel();
+				if(!defaultEventModel) {
+					inspectioUtils.addTag(cells[0], ispConst.TAG_DEFAULT_EVENT_MODEL, this.graph);
 				}
 			}
 		}
@@ -2533,7 +2533,7 @@ Sidebar.prototype.getCursorForCells = function(cells, graph) {
 		return 'url("data:image/svg+xml,%3Csvg version=\'1.1\' id=\'Layer_1\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' x=\'0px\' y=\'0px\' width=\'32px\' height=\'32px\' viewBox=\'0 0 512 512\' style=\'enable-background:new 0 0 512 512;\' xml:space=\'preserve\'%3E %3Cpath d=\'M432 160H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0 256H16a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zM108.1 96h231.81A12.09 12.09 0 0 0 352 83.9V44.09A12.09 12.09 0 0 0 339.91 32H108.1A12.09 12.09 0 0 0 96 44.09V83.9A12.1 12.1 0 0 0 108.1 96zm231.81 256A12.09 12.09 0 0 0 352 339.9v-39.81A12.09 12.09 0 0 0 339.91 288H108.1A12.09 12.09 0 0 0 96 300.09v39.81a12.1 12.1 0 0 0 12.1 12.1z\'/%3E %3C/svg%3E"), pointer'
 	}
 
-	if(cells.length && inspectioUtils.isSlice(cells[0])) {
+	if(cells.length && inspectioUtils.isEventModel(cells[0])) {
 		return 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0eWxlPSJmaWxsOiM1NjU2NTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGRhdGEtcHJlZml4PSJmYXMiIGRhdGEtaWNvbj0iZXhwYW5kIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtZXhwYW5kIGZhLXctMTQiIHJvbGU9ImltZyI+PHBhdGggZD0iTTAgMTgwVjU2YzAtMTMuMyAxMC43LTI0IDI0LTI0aDEyNGM2LjYgMCAxMiA1LjQgMTIgMTJ2NDBjMCA2LjYtNS40IDEyLTEyIDEySDY0djg0YzAgNi42LTUuNCAxMi0xMiAxMkgxMmMtNi42IDAtMTItNS40LTEyLTEyek0yODggNDR2NDBjMCA2LjYgNS40IDEyIDEyIDEyaDg0djg0YzAgNi42IDUuNCAxMiAxMiAxMmg0MGM2LjYgMCAxMi01LjQgMTItMTJWNTZjMC0xMy4zLTEwLjctMjQtMjQtMjRIMzAwYy02LjYgMC0xMiA1LjQtMTIgMTJ6bTE0OCAyNzZoLTQwYy02LjYgMC0xMiA1LjQtMTIgMTJ2ODRoLTg0Yy02LjYgMC0xMiA1LjQtMTIgMTJ2NDBjMCA2LjYgNS40IDEyIDEyIDEyaDEyNGMxMy4zIDAgMjQtMTAuNyAyNC0yNFYzMzJjMC02LjYtNS40LTEyLTEyLTEyek0xNjAgNDY4di00MGMwLTYuNi01LjQtMTItMTItMTJINjR2LTg0YzAtNi42LTUuNC0xMi0xMi0xMkgxMmMtNi42IDAtMTIgNS40LTEyIDEydjEyNGMwIDEzLjMgMTAuNyAyNCAyNCAyNGgxMjRjNi42IDAgMTItNS40IDEyLTEyeiIvPjwvc3ZnPg=="), pointer'
 	}
 

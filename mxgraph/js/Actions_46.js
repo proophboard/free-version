@@ -597,7 +597,7 @@ Actions.prototype.init = function()
 		}
 	});
 
-	this.addAction('change_default_slice', function() {
+	this.addAction('change_default_event_model', function() {
 		var graph = ui.editor.graph;
 
 		if (!graph.isEnabled() || !graph.linkTaskListener) {
@@ -608,7 +608,7 @@ Actions.prototype.init = function()
 
 		if(cells && cells.length > 0) {
 			var cell = cells[0];
-			graph.changeDefaultSlice(cell);
+			graph.changeDefaultEventModel(cell);
 		}
 	});
 
@@ -623,7 +623,7 @@ Actions.prototype.init = function()
 
 		if(cells && cells.length > 0) {
 			var cell = cells[0];
-			graph.syncSliceLanes(cell);
+			graph.syncEventModelLanes(cell);
 		}
 	});
 

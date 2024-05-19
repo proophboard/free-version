@@ -638,18 +638,11 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 	}
 
 	this.setEventModelingEnabled = function (enabled) {
-		this.eventModelingEnabled = enabled;
-		// Sidebar uses a shadow graph so we need to sync the setting
-		if(this.editorUi && this.editorUi.sidebar) {
-			this.editorUi.sidebar.graph.setEventModelingEnabled(enabled);
-		}
+		// Method kept for BC, but Event Modeling is now always on
 
 		if(enabled) {
 			this.currentEdgeStyle[mxConstants.STYLE_CURVED] = '1';
 			this.currentEdgeStyle[mxConstants.STYLE_ELBOW] = '0';
-		} else {
-			this.currentEdgeStyle[mxConstants.STYLE_CURVED] = '0';
-			this.currentEdgeStyle[mxConstants.STYLE_ELBOW] = '1';
 		}
 	}
 
@@ -1984,7 +1977,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
             	let cellIndex = 0;
 
             	const checkCell = cell => {
-					if(inspectioUtils.isSlice(cell)) {
+					if(inspectioUtils.isEventModel(cell)) {
 						return;
 					}
 
@@ -1999,7 +1992,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 
 					const currentCellParent = this.model.getParent(cell);
 
-					if(inspectioUtils.isSlice(currentCellParent)) {
+					if(inspectioUtils.isEventModel(currentCellParent)) {
 						return;
 					}
 
@@ -4521,6 +4514,9 @@ Graph.prototype.initContainerStyles = function() {
 		const orgStyle = this.getStylesheet().getCellStyle(container.getStyle());
 		let alternateStyle = mxUtils.setStyle(container.getStyle(), 'verticalAlign', orgStyle['alternateVerticalAlign']);
 		alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', orgStyle['alternateFontSize']);
+		if(orgStyle['alternateFillColor']) {
+			alternateStyle = mxUtils.setStyle(alternateStyle, 'fillColor', orgStyle['alternateFillColor']);
+		}
 		container.alternateStyle = alternateStyle;
 		container.originalStyle = container.getStyle();
 	}))
@@ -5765,27 +5761,27 @@ Graph.prototype.zapGremlins = function(text)
 	return checked.join('');
 };
 
-Graph.prototype.defaultSliceListeners = [];
+Graph.prototype.defaultEventModelListeners = [];
 
-Graph.prototype.onDefaultSliceChanged = function(listener) {
-	this.defaultSliceListeners.push(listener);
+Graph.prototype.onDefaultEventModelChanged = function(listener) {
+	this.defaultEventModelListeners.push(listener);
 }
 
-Graph.prototype.defaultSliceChanged = function(defaultSliceCell) {
-	this.defaultSliceListeners.forEach(l => l(defaultSliceCell));
+Graph.prototype.defaultEventModelChanged = function(defaultSliceCell) {
+	this.defaultEventModelListeners.forEach(l => l(defaultSliceCell));
 }
 
-Graph.prototype.syncSliceLanes = function(sourceSlice) {
-	if(!inspectioUtils.isSlice(sourceSlice)) {
+Graph.prototype.syncEventModelLanes = function(sourceEventModel) {
+	if(!inspectioUtils.isEventModel(sourceEventModel)) {
 		return;
 	}
 
-	const sourceX = sourceSlice.getGeometry().x;
-	const sourceY = sourceSlice.getGeometry().y;
-	const sourceWidth = sourceSlice.getGeometry().width;
-	const sourceHeight = sourceSlice.getGeometry().height;
+	const sourceX = sourceEventModel.getGeometry().x;
+	const sourceY = sourceEventModel.getGeometry().y;
+	const sourceWidth = sourceEventModel.getGeometry().width;
+	const sourceHeight = sourceEventModel.getGeometry().height;
 
-	const laneHandles = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE), sourceSlice);
+	const laneHandles = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE), sourceEventModel);
 	let lanes = [];
 	let apiLabel = null;
 
@@ -5807,50 +5803,51 @@ Graph.prototype.syncSliceLanes = function(sourceSlice) {
 	this.model.beginUpdate();
 
 	try {
-		this.getAllSlices().forEach(slice => {
-			if(slice === sourceSlice) {
+		this.getAllEventModels().forEach(eventModel => {
+			if(eventModel === sourceEventModel) {
 				return;
 			}
-			const targetApiLabelCandidates = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_SLICE_API_LABEL), slice);
-			const childrenYDelta = apiLabel && targetApiLabelCandidates.length 
+			const targetApiLabelCandidates = this.model.filterDescendants(cell => inspectioUtils.hasTag(cell, ispConst.TAG_SLICE_API_LABEL), eventModel);
+			const childrenYDelta = apiLabel && targetApiLabelCandidates.length
 				? (apiLabel.getGeometry().y - targetApiLabelCandidates[0].getGeometry().y)
 				: 0;
 
-			this.cleanSliceLanes(slice);
+			this.cleanSliceLanes(eventModel);
 
 			if(childrenYDelta) {
-				const vertexHandler = new mxVertexHandler(this.view.getState(slice));
-				vertexHandler.moveChildren(slice, 0, childrenYDelta);
+				const vertexHandler = new mxVertexHandler(this.view.getState(eventModel));
+				vertexHandler.moveChildren(eventModel, 0, childrenYDelta);
 				vertexHandler.destroy();
 			}
 
-			const geo = slice.getGeometry();
+			const geo = eventModel.getGeometry();
 			const xDelta = geo.width - sourceWidth;
-			this.model.setGeometry(slice, new mxGeometry(geo.x, geo.y, geo.width, sourceHeight > geo.height ? sourceHeight : geo.height));
+			this.model.setGeometry(eventModel, new mxGeometry(geo.x, geo.y, geo.width, sourceHeight > geo.height ? sourceHeight : geo.height));
 			const clones = this.cloneCells(lanes, false);
-			this.moveCells(clones.filter(clone => !inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x) * -1, (sourceY - geo.y) * -1, false, slice);
-			this.moveCells(clones.filter(clone => inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x - xDelta) * -1, (sourceY - geo.y) * -1, false, slice);
+			this.moveCells(clones.filter(clone => !inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x) * -1, (sourceY - geo.y) * -1, false, eventModel);
+			this.moveCells(clones.filter(clone => inspectioUtils.hasTag(clone, ispConst.TAG_TIME_HANDLE)), (sourceX - geo.x - xDelta) * -1, (sourceY - geo.y) * -1, false, eventModel);
 		})
 	} finally {
 		this.model.endUpdate();
 	}
 }
 
-Graph.prototype.changeDefaultSlice = function(newDefaultSlice) {
+Graph.prototype.changeDefaultEventModel = function(newDefaultEventModel) {
 	this.model.beginUpdate();
 	try {
-		const currentDefaultSlice = this.getDefaultSlice();
+		const currentDefaultEventModel = this.getDefaultEventModel();
 
-		if(currentDefaultSlice) {
-			inspectioUtils.removeTag(currentDefaultSlice, ispConst.TAG_DEFAULT_SLICE, this);
+		if(currentDefaultEventModel) {
+			inspectioUtils.removeTag(currentDefaultEventModel, ispConst.TAG_DEFAULT_SLICE, this);
+			inspectioUtils.removeTag(currentDefaultEventModel, ispConst.TAG_DEFAULT_EVENT_MODEL, this);
 		}
 
-		inspectioUtils.addTag(newDefaultSlice, ispConst.TAG_DEFAULT_SLICE, this);
+		inspectioUtils.addTag(newDefaultEventModel, ispConst.TAG_DEFAULT_EVENT_MODEL, this);
 	} finally {
 		this.model.endUpdate();
 	}
 
-	this.defaultSliceChanged(newDefaultSlice);
+	this.defaultEventModelChanged(newDefaultEventModel);
 }
 
 Graph.prototype.unlockHandles = function(cells) {
@@ -5868,18 +5865,18 @@ Graph.prototype.unlockHandles = function(cells) {
 	})
 }
 
-Graph.prototype.cleanSliceLanes = function(slice) {
-	if(!inspectioUtils.isSlice(slice)) {
+Graph.prototype.cleanSliceLanes = function(eventModel) {
+	if(!inspectioUtils.isEventModel(eventModel)) {
 		return;
 	}
 
 	let handles = this.model.filterDescendants(cell => {
-		if(cell.isEdge() || cell === slice) {
+		if(cell.isEdge() || cell === eventModel) {
 			return false;
 		}
 
 		return inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE) || inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
-	}, slice);
+	}, eventModel);
 
 	this.unlockHandles(handles);
 	handles = this.addAllEdges(handles);
@@ -5889,18 +5886,18 @@ Graph.prototype.cleanSliceLanes = function(slice) {
 		'cells', handles, 'includeEdges', true));
 }
 
-Graph.prototype.cleanSlice = function(slice) {
-	if(!inspectioUtils.isSlice(slice)) {
+Graph.prototype.cleanSlice = function(eventModel) {
+	if(!inspectioUtils.isEventModel(eventModel)) {
 		return;
 	}
 
 	const noHandles = this.model.filterDescendants(cell => {
-		if(cell.isEdge() || cell === slice) {
+		if(cell.isEdge() || cell === eventModel) {
 			return false;
 		}
 
 		return !inspectioUtils.hasTag(cell, ispConst.TAG_TIME_HANDLE) && !inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE);
-	}, slice);
+	}, eventModel);
 
 	// Only operate on slice as this op is used for cloned slices
 	noHandles.forEach(noHandle => {
@@ -5911,12 +5908,12 @@ Graph.prototype.cleanSlice = function(slice) {
 	});
 }
 
-Graph.prototype.getAllSlices = function (container) {
+Graph.prototype.getAllEventModels = function (container) {
 	if(!container) {
 		container = this.getDefaultParent();
 	}
 
-	const slices = [];
+	const eventModels = [];
 
 	const children = this.model.getChildren(container);
 
@@ -5925,22 +5922,22 @@ Graph.prototype.getAllSlices = function (container) {
 	}
 
 	children.forEach(child => {
-		if(inspectioUtils.isSlice(child)) {
-			slices.push(child);
+		if(inspectioUtils.isEventModel(child)) {
+			eventModels.push(child);
 		} else if (inspectioUtils.isContainer(child)) {
-			slices.push(...this.getAllSlices(child));
+			eventModels.push(...this.getAllEventModels(child));
 		}
 	})
 
-	return slices;
+	return eventModels;
 }
 
-Graph.prototype.getDefaultSlice = function (container) {
+Graph.prototype.getDefaultEventModel = function (container) {
 	if(!container) {
 		container = this.getDefaultParent();
 	}
 
-	let defaultSlice = null;
+	let defaultEventModel = null;
 
 	const children = this.model.getChildren(container);
 
@@ -5949,34 +5946,34 @@ Graph.prototype.getDefaultSlice = function (container) {
 	}
 
 	children.forEach(child => {
-		if(inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_SLICE)) {
-			defaultSlice = child;
+		if(inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_SLICE) || ispConst.TAG_DEFAULT_EVENT_MODEL) {
+			defaultEventModel = child;
 		}
 	})
 
-	if(!defaultSlice) {
+	if(!defaultEventModel) {
 		children.forEach(child => {
-			if(!defaultSlice && inspectioUtils.isContainer(child)) {
-				defaultSlice = this.getDefaultSlice(child);
+			if(!defaultEventModel && inspectioUtils.isContainer(child)) {
+				defaultEventModel = this.getDefaultEventModel(child);
 			}
 		})
 	}
 
-	return defaultSlice;
+	return defaultEventModel;
 }
 
-Graph.prototype.addUserLaneToSlice = function (slice, label) {
+Graph.prototype.addUserLaneToEventModel = function (eventModel, label) {
 	if(!label) {
 		label = '';
 	}
 
-	if(!inspectioUtils.isSlice(slice)) {
+	if(!inspectioUtils.isEventModel(eventModel)) {
 		return false;
 	}
 
-	const firstLaneHandle = inspectioUtils.getFirstSliceLaneHandle(slice);
-	const firstTimeHandle = inspectioUtils.getFirstSliceTimeHandle(slice);
-	const firstUserLaneLabel = inspectioUtils.getFirstSliceUserLaneLabel(slice);
+	const firstLaneHandle = inspectioUtils.getFirstSliceLaneHandle(eventModel);
+	const firstTimeHandle = inspectioUtils.getFirstSliceTimeHandle(eventModel);
+	const firstUserLaneLabel = inspectioUtils.getFirstSliceUserLaneLabel(eventModel);
 
 	if(!firstLaneHandle) {
 		console.error("Unable to add a new user swimlane. The default user lane is missing in the slice! Cannot find the lane handle.");
@@ -6004,24 +6001,24 @@ Graph.prototype.addUserLaneToSlice = function (slice, label) {
 		if((newYPosition) < (100 + ispConst.DEFAULT_SLICE_LANE_HEIGHT)) {
 			const heightDelta = (100 + ispConst.DEFAULT_SLICE_LANE_HEIGHT ) - newYPosition
 			const newSliceBounds = new mxRectangle(
-				slice.getGeometry().x,
-				slice.getGeometry().y - heightDelta,
-				slice.getGeometry().width,
-				slice.getGeometry().height + heightDelta
+				eventModel.getGeometry().x,
+				eventModel.getGeometry().y - heightDelta,
+				eventModel.getGeometry().width,
+				eventModel.getGeometry().height + heightDelta
 			);
 
-			const vertexHandler = new mxVertexHandler(this.view.getState(slice));
-			vertexHandler.moveChildren(slice, 0, heightDelta);
+			const vertexHandler = new mxVertexHandler(this.view.getState(eventModel));
+			vertexHandler.moveChildren(eventModel, 0, heightDelta);
 			vertexHandler.destroy();
 
-			this.resizeCell(slice, newSliceBounds, false);
+			this.resizeCell(eventModel, newSliceBounds, false);
 		}
 
-		const newLaneHandles = this.moveCells([firstLaneHandle, firstTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, slice);
+		const newLaneHandles = this.moveCells([firstLaneHandle, firstTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, eventModel);
 
-		this.insertEdge(slice, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
+		this.insertEdge(eventModel, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
 
-		const newLabels = this.moveCells([firstUserLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, slice);
+		const newLabels = this.moveCells([firstUserLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT * -1, true, eventModel);
 		newLabel = newLabels[0];
 
 		const state = this.view.getState(newLabel, true);
@@ -6029,7 +6026,9 @@ Graph.prototype.addUserLaneToSlice = function (slice, label) {
 
 		this.cellLabelChanged(newLabel, label, false);
 		this.setSelectionCell(newLabel);
-		this.resizeCell(newLabel, new mxRectangle(newLabel.getGeometry().x, newLabel.getGeometry().y, 70, 90));
+		if(inspectioUtils.isOfType(newLabel, ispConst.TYPE_ROLE)) {
+			this.resizeCell(newLabel, new mxRectangle(newLabel.getGeometry().x, newLabel.getGeometry().y, 70, 90));
+		}
 	} catch (e) {
 		console.error(e);
 	} finally {
@@ -6044,18 +6043,18 @@ Graph.prototype.addUserLaneToSlice = function (slice, label) {
 	}
 }
 
-Graph.prototype.addModuleLaneToSlice = function (slice, label) {
+Graph.prototype.addModuleLaneToEventModel = function (eventModel, label) {
 	if(!label) {
 		label = ''
 	}
 
-	if(!inspectioUtils.isSlice(slice)) {
+	if(!inspectioUtils.isEventModel(eventModel)) {
 		return false;
 	}
 
-	const lastLaneHandle = inspectioUtils.getLastSliceLaneHandle(slice);
-	const lastTimeHandle = inspectioUtils.getLastSliceTimeHandle(slice);
-	const lastModuleLaneLabel = inspectioUtils.getLastSliceModuleLaneLabel(slice);
+	const lastLaneHandle = inspectioUtils.getLastSliceLaneHandle(eventModel);
+	const lastTimeHandle = inspectioUtils.getLastSliceTimeHandle(eventModel);
+	const lastModuleLaneLabel = inspectioUtils.getLastSliceModuleLaneLabel(eventModel);
 
 	if(!lastLaneHandle) {
 		console.error("Unable to add a new module swimlane. The default module lane is missing in the slice! Cannot find the lane handle.");
@@ -6072,7 +6071,7 @@ Graph.prototype.addModuleLaneToSlice = function (slice, label) {
 		return false;
 	}
 
-	const sliceHeight = slice.getGeometry().height;
+	const sliceHeight = eventModel.getGeometry().height;
 
 	const newYPosition = lastLaneHandle.getGeometry().y + ispConst.DEFAULT_SLICE_LANE_HEIGHT;
 
@@ -6082,20 +6081,20 @@ Graph.prototype.addModuleLaneToSlice = function (slice, label) {
 	try {
 		if((newYPosition) > (sliceHeight - 150)) {
 			const newSliceBounds = new mxRectangle(
-				slice.getGeometry().x,
-				slice.getGeometry().y,
-				slice.getGeometry().width,
+				eventModel.getGeometry().x,
+				eventModel.getGeometry().y,
+				eventModel.getGeometry().width,
 				newYPosition + 150
 			);
 
-			this.resizeCell(slice, newSliceBounds, false);
+			this.resizeCell(eventModel, newSliceBounds, false);
 		}
 
-		const newLaneHandles = this.moveCells([lastLaneHandle, lastTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, slice);
+		const newLaneHandles = this.moveCells([lastLaneHandle, lastTimeHandle], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, eventModel);
 
-		this.insertEdge(slice, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
+		this.insertEdge(eventModel, null, '', newLaneHandles[0], newLaneHandles[1], ispConst.SLICE_LANE_EDGE_STYLE);
 
-		const newLabels = this.moveCells([lastModuleLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, slice);
+		const newLabels = this.moveCells([lastModuleLaneLabel], 0, ispConst.DEFAULT_SLICE_LANE_HEIGHT, true, eventModel);
 		newLabel = newLabels[0];
 		this.cellLabelChanged(newLabel, label, false);
 		this.setSelectionCell(newLabel);
@@ -6252,7 +6251,7 @@ HoverIcons.prototype.isCurrentStateActiveElement = function()
 	return this.currentState.cell.getId() === this.graph.currentActiveGraphElement.getId();
 }
 
-HoverIcons.prototype.isEventModelingDisabledOrCellInSlice = function () {
+HoverIcons.prototype.isEventModelingDisabledOrCellInEventModel = function () {
 	if(!this.graph.eventModelingEnabled) {
 		return true;
 	}
@@ -6269,7 +6268,7 @@ HoverIcons.prototype.isEventModelingDisabledOrCellInSlice = function () {
 		return false;
 	}
 
-	if(!inspectioUtils.isSlice(this.currentState.cell.parent)) {
+	if(!inspectioUtils.isEventModel(this.currentState.cell.parent)) {
 		return false;
 	}
 
@@ -6278,25 +6277,25 @@ HoverIcons.prototype.isEventModelingDisabledOrCellInSlice = function () {
 
 HoverIcons.prototype.refreshArrows = function()
 {
-	if(this.graph.codySuggestEnabled && this.graph.codyUpCb && this.isEventModelingDisabledOrCellInSlice()) {
+	if(this.graph.codySuggestEnabled && this.graph.codyUpCb && this.isEventModelingDisabledOrCellInEventModel()) {
 		this.arrowUp = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'up');
 	} else {
 		this.arrowUp = this.createArrow(this.triangleUp, mxResources.get('plusTooltip'));
 	}
 
-	if(this.graph.codySuggestEnabled && this.graph.codyRightCb && this.isEventModelingDisabledOrCellInSlice()) {
+	if(this.graph.codySuggestEnabled && this.graph.codyRightCb && this.isEventModelingDisabledOrCellInEventModel()) {
 		this.arrowRight = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'right');
 	} else {
 		this.arrowRight = this.createArrow(this.triangleRight, mxResources.get('plusTooltip'));
 	}
 
-	if(this.graph.codySuggestEnabled && this.graph.codyDownCb && this.isEventModelingDisabledOrCellInSlice()) {
+	if(this.graph.codySuggestEnabled && this.graph.codyDownCb && this.isEventModelingDisabledOrCellInEventModel()) {
 		this.arrowDown = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'down');
 	} else {
 		this.arrowDown = this.createArrow(this.triangleDown, mxResources.get('plusTooltip'));
 	}
 
-	if(this.graph.codySuggestEnabled && this.graph.codyLeftCb && this.isEventModelingDisabledOrCellInSlice()) {
+	if(this.graph.codySuggestEnabled && this.graph.codyLeftCb && this.isEventModelingDisabledOrCellInEventModel()) {
 		this.arrowLeft = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'left');
 	} else {
 		this.arrowLeft = this.createArrow(this.triangleLeft, mxResources.get('plusTooltip'));
@@ -6550,9 +6549,9 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection, addLane
 				}), 50);
 			} else if (addLaneToSlice) {
 				if(addLaneToSlice === 'module') {
-					this.graph.addModuleLaneToSlice(this.currentState.cell.parent);
+					this.graph.addModuleLaneToEventModel(this.currentState.cell.parent);
 				} else if(addLaneToSlice === 'user') {
-					this.graph.addUserLaneToSlice(this.currentState.cell.parent);
+					this.graph.addUserLaneToEventModel(this.currentState.cell.parent);
 				}
 			} else {
 				this.activeArrow = arrow;
@@ -8690,10 +8689,10 @@ if (typeof mxVertexHandler != 'undefined')
 			}
 
 			if(this.eventModelingEnabled) {
-				const defaultSlice = this.getDefaultSlice();
+				const defaultEventModel = this.getDefaultEventModel();
 
-				if(defaultSlice) {
-					this.defaultSliceChanged(defaultSlice);
+				if(defaultEventModel) {
+					this.defaultEventModelChanged(defaultEventModel);
 				}
 			}
 
@@ -9258,8 +9257,8 @@ if (typeof mxVertexHandler != 'undefined')
 					value = tmp;
 				}
 
-				if(inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE) && cell.parent && inspectioUtils.hasTag(cell.parent, ispConst.TAG_DEFAULT_SLICE)) {
-					this.defaultSliceChanged(cell.parent);
+				if(inspectioUtils.hasTag(cell, ispConst.TAG_LANE_HANDLE) && cell.parent && (inspectioUtils.hasTag(cell.parent, ispConst.TAG_DEFAULT_SLICE) || inspectioUtils.hasTag(cell.parent, ispConst.TAG_DEFAULT_EVENT_MODEL))) {
+					this.defaultEventModelChanged(cell.parent);
 				}
 
 
@@ -12218,7 +12217,7 @@ if (typeof mxVertexHandler != 'undefined')
 
 				vertexHandlerMouseUp.apply(this, arguments);
 
-				if(vertexIsResized && inspectioUtils.isSlice(this.state.cell)) {
+				if(vertexIsResized && inspectioUtils.isEventModel(this.state.cell)) {
 					if(xOffset === 0 && widthOffset !== 0) {
 						var timehandles = this.graph.model.getChildren(this.state.cell).filter(child => inspectioUtils.isTimeHandle(child));
 						this.graph.moveCells(timehandles, this.lastWidthOffset, 0, false);

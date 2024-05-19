@@ -166,7 +166,7 @@ mxVertexHandler.prototype.resizeVertex = function(me)
         this.drawPreview();
     }
 
-    if(inspectioUtils.isSlice(this.state.cell)) {
+    if(inspectioUtils.isEventModel(this.state.cell)) {
         if(!this.lastWidthOffset) {
             this.lastXOffset = 0;
             this.lastWidthOffset = 0;

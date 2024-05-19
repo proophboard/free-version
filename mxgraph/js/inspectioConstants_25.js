@@ -13,7 +13,7 @@ var ispConst = {
     TYPE_DOCUMENT_THUMB : 'documentThumb',
     TYPE_FEATURE : 'feature',
     TYPE_FEATURE_THUMB : 'featureThumb',
-    TYPE_SLICE_THUMB : 'sliceThumb',
+    TYPE_SWIMLANES_THUMB : 'swimlanesThumb',
     TYPE_BC : 'boundedContext',
     TYPE_BC_THUMB : 'boundedContextThumb',
     TYPE_ROLE : 'role',
@@ -43,8 +43,11 @@ var ispConst = {
     TAG_DEPLOYED : 'deployed',
     TAG_CONNECTED : 'pb:connected',
     TAG_DISCONNECTED : 'pb:disconnected',
+    /* TAG no longer in use, but kept for BC, replaced by TAG_EVENT_MODEL */
     TAG_SLICE : 'pb:slice',
+    TAG_EVENT_MODEL: 'pb:eventmodel',
     TAG_DEFAULT_SLICE : 'pb:defaultslice',
+    TAG_DEFAULT_EVENT_MODEL : 'pb:defaulteventmodel',
     TAG_LANE_HANDLE : 'pb:lanehandle',
     TAG_TIME_HANDLE : 'pb:timehandle',
     TAG_SLICE_API_LABEL : 'pb:apilabel',
@@ -76,7 +79,7 @@ var ispConst = {
     ZOOM_MODE_ALL_ELES : 'allEles',
 
     //Style
-    THEME : 'material18',
+    THEME : 'material19',
 
     PROCESS_BORDER_COLOR : '#919191',
 
