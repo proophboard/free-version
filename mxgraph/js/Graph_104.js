@@ -6524,6 +6524,10 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection, addLane
 			if(codyDirection && !mxEvent.isControlDown(evt)) {
 				// Fire CB after short wait time so that editor blur can happen before
 				window.setTimeout(mxUtils.bind(this, function() {
+					if(this.graph.connectionHandler.isConnecting()) {
+						return;
+					}
+
 					switch (codyDirection) {
 						case "up":
 							if(this.graph.codyUpCb) {
@@ -6546,7 +6550,13 @@ HoverIcons.prototype.createArrow = function(img, tooltip, codyDirection, addLane
 							}
 							break;
 					}
-				}), 50);
+				}), 100);
+
+				this.activeArrow = arrow;
+				this.mouseDownPoint = mxUtils.convertPoint(this.graph.container,
+					mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+				this.drag(evt, this.mouseDownPoint.x, this.mouseDownPoint.y);
+				mxEvent.consume(evt);
 			} else if (addLaneToSlice) {
 				if(addLaneToSlice === 'module') {
 					this.graph.addModuleLaneToEventModel(this.currentState.cell.parent);
