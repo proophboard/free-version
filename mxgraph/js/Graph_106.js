@@ -5938,7 +5938,7 @@ Graph.prototype.getDefaultEventModel = function (container) {
 	}
 
 	children.forEach(child => {
-		if(inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_SLICE) || ispConst.TAG_DEFAULT_EVENT_MODEL) {
+		if(inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_SLICE) || inspectioUtils.hasTag(child, ispConst.TAG_DEFAULT_EVENT_MODEL)) {
 			defaultEventModel = child;
 		}
 	})
