@@ -1018,7 +1018,9 @@ Sidebar.prototype.initContainer = function (container)
 
 Sidebar.prototype.initInformationCard = function (cell)
 {
-	// All Information cards get Namespace "/Information" by default. That's easier to handle for newcomers
+	// Assign a unique id before manipulating the cell, otherwise this has sideeffects if more information cards are added
+	cell.setId(this.editorUi.editor.graph.model.createId());
+	// All Information cards get Namespace "/App" by default. That's easier to handle for newcomers
 	inspectioUtils.setMetadata(cell, '{"ns": "'+ ispConst.DEFAULT_DOC_NS +'"}', this.editorUi.editor.graph);
 }
 
