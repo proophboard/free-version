@@ -585,6 +585,18 @@ var inspectioUtils = {
         return cell.value.hasAttribute('metadata') ? cell.value.getAttribute('metadata') : undefined;
     },
 
+    metadataToJSON: function (metadata) {
+        if(!metadata) {
+            return {};
+        }
+
+        try {
+            return JSON.parse(metadata);
+        } catch (e) {
+            return {};
+        }
+    },
+
     setMetadata: function (cell, metadata, graph) {
         if(cell) {
             graph.model.beginUpdate();

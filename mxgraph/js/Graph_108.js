@@ -765,6 +765,15 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 						var similarCell = this.model.getCell(similarCellId);
 
 						if(similarCell) {
+							const oldMetadata = inspectioUtils.metadataToJSON(inspectioUtils.getMetadata(similarCell));
+
+							if(oldMetadata.$nodeType) {
+								newMetadata = JSON.stringify({
+									...inspectioUtils.metadataToJSON(newMetadata),
+									$nodeType: oldMetadata.$nodeType
+								}, null, 2)
+							}
+
 							this.setAttributeForCell(similarCell, 'metadata', newMetadata);
 							const cellState = this.getCellState(cell);
 							this.cellRenderer.redraw(cellState, false, true);

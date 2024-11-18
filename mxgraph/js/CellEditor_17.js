@@ -582,7 +582,7 @@ mxCellEditor.prototype.modifiedResize = function()
                     bds.height - ((vpos == mxConstants.ALIGN_MIDDLE) ? (spacingTop + spacingBottom) : 0));
             }
 
-            this.bounds = new mxRectangle(bds.x + state.absoluteOffset.x, bds.y + state.absoluteOffset.y, bds.width, bds.height);
+            this.bounds = new mxRectangle(bds.x + (state.absoluteOffset.x * scale), bds.y + (state.absoluteOffset.y * scale), bds.width, bds.height);
         }
 
         // Needed for word wrap inside text blocks with oversize lines to match the final result where

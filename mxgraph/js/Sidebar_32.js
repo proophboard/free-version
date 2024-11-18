@@ -948,14 +948,36 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     const insertImageHook = (imageCell) => {
     	var graph = this.editorUi.editor.graph;
 		if(graph.insertImageListener) {
-			graph.insertImageListener((imageName, imageUrl) => {
+			graph.insertImageListener((imageName, imageUrl, width, height) => {
 				var styleWithImage = mxUtils.setStyle(imageCell.getStyle(), 'image', imageUrl);
+
 				graph.model.beginUpdate();
 				try {
 					//const cellOnGraph = graph.getModel().filterDescendants(cell => cell.id === imageCell.id)[0];
+					var imgWidth = width;
+					var imgHeight = height;
+					var factor = 1;
+
+					if(imgWidth > imgHeight) {
+						if(imgWidth > 480) {
+							factor = imgWidth * 100 / 480;
+						}
+					} else {
+						if(imgHeight > 300) {
+							factor = imgHeight * 100 / 300;
+						}
+					}
+
+					imgWidth *= factor;
+					imgHeight *= factor;
+
+					styleWithImage = mxUtils.setStyle(styleWithImage, 'minWidth', imgWidth);
+					styleWithImage = mxUtils.setStyle(styleWithImage, 'minHeight', imgHeight);
+
 					graph.setCellStyle(styleWithImage, [imageCell]);
 					graph.labelChanged(imageCell, imageName);
 					const cellState = graph.getCellState(imageCell);
+					graph.resizeCell(imageCell, new mxRectangle(imageCell.getGeometry().x, imageCell.getGeometry().y, imgWidth, imgHeight))
 					graph.cellRenderer.redraw(cellState, false, true);
 				} catch (e) {
 					console.error(e);
@@ -1059,6 +1081,11 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 {
 	let thumbs = cells;
 	let firstCell = cells[0];
+
+	if(inspectioUtils.isEventModel(firstCell)) {
+		realWidth = 170;
+		realHeight = 100;
+	}
 
 	if (thumbStyle) {
 		thumbs = [new mxCell(cells[0].getValue(), new mxGeometry(0, 0, realWidth, realHeight), thumbStyle)];
