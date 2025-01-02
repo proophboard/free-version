@@ -6023,12 +6023,13 @@ Graph.prototype.repositionLanes = function (cells) {
 					))
 				}
 			})
-
-			this.removeOutOfBoundsWatermarks(eventModel);
-			this.installLaneLabelWatermarks(eventModel);
 		} finally {
 			this.model.endUpdate();
 		}
+
+		this.removeOutOfBoundsWatermarks(eventModel);
+
+		this.installLaneLabelWatermarks(eventModel);
 	})
 }
 
@@ -6038,13 +6039,19 @@ Graph.prototype.removeOutOfBoundsWatermarks = function(eventModel) {
 
 	const watermarksToRemove = this.model.getChildrenOrEmptyArr(eventModel)
 		.filter(c => inspectioUtils.isLaneLabelWatermark(c))
-		.filter(w => w.getGeometry().x < 0 || w.getGeometry().x > emGeo.width - ispConst.LANE_WATERMARK_DISTANCE);
+		.filter(w => w.getGeometry().x < 0 || w.getGeometry().x > emGeo.width - 200);
 
 	this.model.beginUpdate();
 
-
 	try {
 		this.unlockHandles(watermarksToRemove);
+	} finally {
+		this.model.endUpdate();
+	}
+
+	this.model.beginUpdate();
+
+	try {
 		this.removeCells(watermarksToRemove);
 	} finally {
 		this.model.endUpdate();
@@ -6052,16 +6059,22 @@ Graph.prototype.removeOutOfBoundsWatermarks = function(eventModel) {
 }
 
 Graph.prototype.installLaneLabelWatermarks = function(eventModel) {
-	const laneLabels = this.model.getChildrenOrEmptyArr(eventModel).filter(c => inspectioUtils.isSliceLaneLabel(c) && !inspectioUtils.hasTag(c, ispConst.TAG_SLICE_API_LABEL));
+	this.getModel().beginUpdate();
 
-	laneLabels.forEach(l => this.installLaneLabelWatermarksForLabel(l, eventModel));
+	try {
+		const laneLabels = this.model.getChildrenOrEmptyArr(eventModel).filter(c => inspectioUtils.isSliceLaneLabel(c) && !inspectioUtils.hasTag(c, ispConst.TAG_SLICE_API_LABEL));
+
+		laneLabels.forEach(l => this.installLaneLabelWatermarksForLabel(l, eventModel));
+	} finally {
+		this.getModel().endUpdate();
+	}
 }
 
 Graph.prototype.installLaneLabelWatermarksForLabel = function(label, eventModel) {
 	const labelId = label.getId();
 	const emGeo = eventModel.getGeometry();
 
-	const connectedWatermarks = this.getConnectedWatermarks(labelId, eventModel).sort((a,b) => a.getGeometry().x < b.getGeometry().x);
+	const connectedWatermarks = this.getConnectedWatermarks(labelId, eventModel).sort((a,b) => a.getGeometry().x - b.getGeometry().x );
 
 	let firstWatermark = undefined;
 	let lastWatermark = label;
@@ -6070,7 +6083,6 @@ Graph.prototype.installLaneLabelWatermarksForLabel = function(label, eventModel)
 		firstWatermark = connectedWatermarks[0];
 		lastWatermark = connectedWatermarks[connectedWatermarks.length - 1];
 	}
-
 
 	if(firstWatermark) {
 		let labelToFirstWatermarkDistance = firstWatermark.getGeometry().x - label.getGeometry().x;
@@ -6091,6 +6103,8 @@ Graph.prototype.installLaneLabelWatermarksForLabel = function(label, eventModel)
 		lastCount++;
 
 		const newWatermark = this.moveCells([lastWatermark], ispConst.LANE_WATERMARK_DISTANCE * lastCount, 0, true, eventModel)[0];
+
+		this.orderCells(true, [newWatermark]);
 
 		if(!firstWatermark) {
 			// newWatermark is a clone of the label itself
@@ -12499,13 +12513,7 @@ if (typeof mxVertexHandler != 'undefined')
 					const graph = this.graph;
 
 					window.setTimeout(() => {
-						graph.getModel().beginUpdate();
-
-						try {
-							graph.repositionLanes([eventModel]);
-						} finally {
-							graph.getModel().endUpdate();
-						}
+						graph.repositionLanes([eventModel]);
 					}, 200)
 
 				}

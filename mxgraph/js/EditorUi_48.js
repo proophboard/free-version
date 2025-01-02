@@ -4209,10 +4209,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 					}
 
 					graph.getModel().setGeometry(cells[i], geo);
-
-					if(inspectioUtils.isEventModel(cells[i])) {
-						graph.repositionLanes([cells[i]]);
-					}
 				}
 			}
 		}
@@ -4317,6 +4313,8 @@ EditorUi.prototype.createKeyHandler = function(editor)
 			}
 
 			// And now trigger one final change with change notification
+			var cells = graph.getSelectionCells();
+
 			graph.model.beginUpdate();
 			try {
 				if(internalResize) {
@@ -4324,8 +4322,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 				} else {
 					moveFunct(internalFinalStepSize, internalKeyCode);
 				}
-
-				var cells = graph.getSelectionCells();
 
 				cells.forEach(cell => {
 					if(inspectioUtils.isContainer(cell)) {
@@ -4336,6 +4332,9 @@ EditorUi.prototype.createKeyHandler = function(editor)
 				graph.model.endUpdate();
 				finalStepSize = null;
 			}
+
+			const eventModels = cells.filter(cell => inspectioUtils.isEventModel(cell));
+			graph.repositionLanes(eventModels);
 		}
 
 		if (thread != null)
