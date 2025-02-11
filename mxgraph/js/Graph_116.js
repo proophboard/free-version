@@ -5574,7 +5574,9 @@ Graph.prototype.unlockHandles = function (cells) {
 
   cells.forEach(cell => {
     const cellState = this.getCellState(cell);
-    this.cellRenderer.redraw(cellState, false, true);
+    if(cellState) {
+      this.cellRenderer.redraw(cellState, false, true);
+    }
   })
 }
 

@@ -24,7 +24,8 @@ const faDefinitions = {
         "far-comment-alt": "Chat",
         "far-bell": "Maps",
         "key": "Maps",
-        "map-marker-alt": "Maps"
+        "map-marker-alt": "Maps",
+        "circle": "Interfaces"
     },
     "Accessibility": {
         "american-sign-language-interpreting": "American Sign Language Interpreting",

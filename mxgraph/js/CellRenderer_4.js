@@ -1,5 +1,9 @@
 mxCellRenderer.prototype.redraw = function(state, force, rendering, preflightRendering)
 {
+    if(!state) {
+        return;
+    }
+
     var doRedraw = () => {
         var orgScale = 1;
         if(state.view) {
