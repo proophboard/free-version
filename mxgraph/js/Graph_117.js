@@ -507,6 +507,7 @@ mxEvent.isLeftMouseButton = function (evt) {
       this.applyZoomMode(ispConst.ZOOM_MODE_BC_ONLY, false, true);
       // In liteMode, container details are shown dblClick or context menu Bird View -> Show Details
       // See also: this.showContainerDetails
+      this.syncAlternateFontSize(true);
     }
 
     this.disableLiteMode = function () {
@@ -4596,8 +4597,8 @@ Graph.prototype.syncZoomMode = function () {
   }, 50);
 }
 
-Graph.prototype.syncAlternateFontSize = function () {
-  if(this.liteMode) {
+Graph.prototype.syncAlternateFontSize = function (reset) {
+  if(this.liteMode && !reset) {
     return;
   }
   window.setTimeout(() => {
@@ -4708,7 +4709,10 @@ Graph.prototype.syncAlternateFontSize = function () {
                 fontSize = 1482;
               }
 
-              alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', fontSize);
+              if(!reset) {
+                alternateStyle = mxUtils.setStyle(alternateStyle, 'fontSize', fontSize);
+              }
+
               this.setAlternateStyle(cell, alternateStyle);
             }
           });

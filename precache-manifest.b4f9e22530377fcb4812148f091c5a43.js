@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "0c428a93a67339ada6f3",
+    "revision": "21c500d7dbeabf1a9776",
     "url": "https://free.prooph-board.com/static/css/main.7a9737da.chunk.css"
   },
   {
-    "revision": "0c428a93a67339ada6f3",
-    "url": "https://free.prooph-board.com/static/js/main.0c428a93.chunk.js"
+    "revision": "21c500d7dbeabf1a9776",
+    "url": "https://free.prooph-board.com/static/js/main.21c500d7.chunk.js"
   },
   {
     "revision": "00cd2fcd907d64428051",
@@ -26,10 +26,6 @@ self.__precacheManifest = [
   {
     "revision": "8e3c7f5520f5ae906c6cf6d7f3ddcd19",
     "url": "https://free.prooph-board.com/static/media/icons.8e3c7f55.eot"
-  },
-  {
-    "revision": "0ab54153eeeca0ce03978cc463b257f7",
-    "url": "https://free.prooph-board.com/static/media/icons.0ab54153.woff2"
   },
   {
     "revision": "faff92145777a3cbaf8e7367b4807987",
@@ -72,10 +68,6 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/brand-icons.e8c322de.woff2"
   },
   {
-    "revision": "a046592bac8f2fd96e994733faf3858c",
-    "url": "https://free.prooph-board.com/static/media/brand-icons.a046592b.woff"
-  },
-  {
     "revision": "c5ebe0b32dc1b5cc449a76c4204d13bb",
     "url": "https://free.prooph-board.com/static/media/brand-icons.c5ebe0b3.ttf"
   },
@@ -84,11 +76,19 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/brand-icons.a1a749e8.svg"
   },
   {
+    "revision": "0ab54153eeeca0ce03978cc463b257f7",
+    "url": "https://free.prooph-board.com/static/media/icons.0ab54153.woff2"
+  },
+  {
+    "revision": "a046592bac8f2fd96e994733faf3858c",
+    "url": "https://free.prooph-board.com/static/media/brand-icons.a046592b.woff"
+  },
+  {
     "revision": "63c5836d434b489620d45326605cb59c",
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "eadd235b3406871c74cd899f23e8d423",
+    "revision": "6072f258fdb68dcfd0b62dc469788e3f",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
