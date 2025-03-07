@@ -1,7 +1,7 @@
 {
   "main.css": "https://free.prooph-board.com/static/css/main.4cf0f9c6.chunk.css",
-  "main.js": "https://free.prooph-board.com/static/js/main.4346812e.chunk.js",
-  "main.js.map": "https://free.prooph-board.com/static/js/main.4346812e.chunk.js.map",
+  "main.js": "https://free.prooph-board.com/static/js/main.d4d725db.chunk.js",
+  "main.js.map": "https://free.prooph-board.com/static/js/main.d4d725db.chunk.js.map",
   "static/css/1.76d63dc5.chunk.css": "https://free.prooph-board.com/static/css/1.76d63dc5.chunk.css",
   "static/js/1.321f6611.chunk.js": "https://free.prooph-board.com/static/js/1.321f6611.chunk.js",
   "static/js/1.321f6611.chunk.js.map": "https://free.prooph-board.com/static/js/1.321f6611.chunk.js.map",
@@ -12,6 +12,6 @@
   "static/css/main.4cf0f9c6.chunk.css.map": "https://free.prooph-board.com/static/css/main.4cf0f9c6.chunk.css.map",
   "static/css/1.76d63dc5.chunk.css.map": "https://free.prooph-board.com/static/css/1.76d63dc5.chunk.css.map",
   "index.html": "https://free.prooph-board.com/index.html",
-  "precache-manifest.37c4e16046c181ff4f6c5f04f1de93bc.js": "https://free.prooph-board.com/precache-manifest.37c4e16046c181ff4f6c5f04f1de93bc.js",
+  "precache-manifest.f1f0e04520a2ad2555fc7b3e72b25aa0.js": "https://free.prooph-board.com/precache-manifest.f1f0e04520a2ad2555fc7b3e72b25aa0.js",
   "service-worker.js": "https://free.prooph-board.com/service-worker.js"
 }
