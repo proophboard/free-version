@@ -71,6 +71,7 @@ mxGraph.prototype.isTouchpadModeEnabled = true;
 mxGraph.prototype.birdViewAnimations = false;
 mxGraph.prototype.history = null;
 mxGraph.prototype.codySuggestEnabled = false;
+mxGraph.prototype.codySuggestActive = false;
 mxGraph.prototype.eventModelingEnabled = true;
 mxGraph.prototype.codyUpCb = null;
 mxGraph.prototype.codyDownCb = null;
@@ -605,6 +606,16 @@ mxEvent.isLeftMouseButton = function (evt) {
       this.codySuggestEnabled = enabled;
     }
 
+    // Suggestions can be enabled/disabled in board settings,
+    // and they are activated by pressing ALT key
+    this.isCodySuggestActive = function () {
+      return this.codySuggestEnabled && this.codySuggestActive;
+    }
+
+    this.setCodySuggestActive = function (active) {
+      this.codySuggestActive = !!active;
+    }
+
     this.setEventModelingEnabled = function (enabled) {
       // Method kept for BC, but Event Modeling is now always on
 
@@ -902,7 +913,9 @@ mxEvent.isLeftMouseButton = function (evt) {
       var prevContainerCursor = this.container.style.cursor;
 
       if (cursor) {
-        this.container.style.cursor = cursor;
+        requestAnimationFrame(() => {
+          this.container.style.cursor = cursor;
+        })
       }
 
       this.pastedOnNextClickCb = mxUtils.bind(this, function () {
@@ -911,7 +924,9 @@ mxEvent.isLeftMouseButton = function (evt) {
           cb();
         }
         if (cursor) {
-          this.container.style.cursor = prevContainerCursor;
+          requestAnimationFrame(() => {
+            this.container.style.cursor = prevContainerCursor;
+          })
         }
       });
     }
@@ -1457,7 +1472,9 @@ mxEvent.isLeftMouseButton = function (evt) {
             prevCursor = this.container.style.cursor;
             setPrevOnState = false;
             stateWithChangedCursor = null;
-            this.container.style.cursor = 'move';
+            requestAnimationFrame(() => {
+              this.container.style.cursor = 'move';
+            })
           }
 
         }
@@ -1468,7 +1485,9 @@ mxEvent.isLeftMouseButton = function (evt) {
           if (setPrevOnState && stateWithChangedCursor) {
             stateWithChangedCursor.setCursor(prevCursor);
           } else {
-            this.container.style.cursor = prevContainerCursor;
+            requestAnimationFrame(() => {
+              this.container.style.cursor = prevContainerCursor;
+            })
           }
 
           prevCursor = null;
@@ -1538,7 +1557,9 @@ mxEvent.isLeftMouseButton = function (evt) {
 
       this.setMouseCursor = mxUtils.bind(this, function (cursor) {
         if (this.container) {
-          this.container.style.cursor = cursor;
+          requestAnimationFrame(() => {
+            this.container.style.cursor = cursor;
+          })
         }
       })
 
@@ -2572,58 +2593,68 @@ Graph.prototype.getFoldingImage = function () {
    * Zooms out of the graph by <zoomFactor>.
    */
   Graph.prototype.updateCssTransform = function () {
+    const scale = this.currentScale;
+    const translate = this.currentTranslate;
     var temp = this.view.getDrawPane();
 
-    if (temp != null) {
-      var g = temp.parentNode;
+    const update = () => {
+      if (temp != null) {
+        var g = temp.parentNode;
 
-      if (!this.useCssTransforms) {
-        g.removeAttribute('transformOrigin');
-        g.removeAttribute('transform');
-      } else {
-        var prev = g.getAttribute('transform');
-        g.setAttribute('transformOrigin', '0 0');
-        g.setAttribute('transform', 'scale(' + this.currentScale + ',' + this.currentScale + ')' +
-          'translate(' + this.currentTranslate.x + ',' + this.currentTranslate.y + ')');
+        if (!this.useCssTransforms) {
+          g.removeAttribute('transformOrigin');
+          g.removeAttribute('transform');
+        } else {
+          var prev = g.getAttribute('transform');
+          g.setAttribute('transformOrigin', '0 0');
+          g.setAttribute('transform', 'scale(' + scale + ',' + scale + ')' +
+            'translate(' + translate.x + ',' + translate.y + ')');
 
-        // Applies workarounds only if translate has changed
-        if (prev != g.getAttribute('transform')) {
-          try {
-            // Applies transform to labels outside of the SVG DOM
-            // Excluded via isCssTransformsSupported
-            //					if (mxClient.NO_FO)
-            //					{
-            //						var transform = 'scale(' + this.currentScale + ')' + 'translate(' +
-            //							this.currentTranslate.x + 'px,' + this.currentTranslate.y + 'px)';
-            //
-            //						this.view.states.visit(mxUtils.bind(this, function(cell, state)
-            //						{
-            //							if (state.text != null && state.text.node != null)
-            //							{
-            //								// Stores initial CSS transform that is used for the label alignment
-            //								if (state.text.originalTransform == null)
-            //								{
-            //									state.text.originalTransform = state.text.node.style.transform;
-            //								}
-            //
-            //								state.text.node.style.transform = transform + state.text.originalTransform;
-            //							}
-            //						}));
-            //					}
-            // Workaround for https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4320441/
-            if (mxClient.IS_EDGE) {
-              // Recommended workaround is to do this on all
-              // foreignObjects, but this seems to be faster
-              var val = g.style.display;
-              g.style.display = 'none';
-              g.getBBox();
-              g.style.display = val;
+          // Applies workarounds only if translate has changed
+          if (prev != g.getAttribute('transform')) {
+            try {
+              // Applies transform to labels outside of the SVG DOM
+              // Excluded via isCssTransformsSupported
+              //					if (mxClient.NO_FO)
+              //					{
+              //						var transform = 'scale(' + this.currentScale + ')' + 'translate(' +
+              //							this.currentTranslate.x + 'px,' + this.currentTranslate.y + 'px)';
+              //
+              //						this.view.states.visit(mxUtils.bind(this, function(cell, state)
+              //						{
+              //							if (state.text != null && state.text.node != null)
+              //							{
+              //								// Stores initial CSS transform that is used for the label alignment
+              //								if (state.text.originalTransform == null)
+              //								{
+              //									state.text.originalTransform = state.text.node.style.transform;
+              //								}
+              //
+              //								state.text.node.style.transform = transform + state.text.originalTransform;
+              //							}
+              //						}));
+              //					}
+              // Workaround for https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4320441/
+              if (mxClient.IS_EDGE) {
+                // Recommended workaround is to do this on all
+                // foreignObjects, but this seems to be faster
+                var val = g.style.display;
+                g.style.display = 'none';
+                g.getBBox();
+                g.style.display = val;
+              }
+            } catch (e) {
+              // ignore
             }
-          } catch (e) {
-            // ignore
           }
         }
       }
+    }
+
+    if(this.enabled) {
+      requestAnimationFrame(update);
+    } else {
+      update();
     }
   };
 
@@ -6152,25 +6183,25 @@ HoverIcons.prototype.isEventModelingDisabledOrCellInEventModel = function () {
 }
 
 HoverIcons.prototype.refreshArrows = function () {
-  if (this.graph.codySuggestEnabled && this.graph.codyUpCb && this.isEventModelingDisabledOrCellInEventModel()) {
+  if (this.graph.isCodySuggestActive() && this.graph.codyUpCb && this.isEventModelingDisabledOrCellInEventModel()) {
     this.arrowUp = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'up');
   } else {
     this.arrowUp = this.createArrow(this.triangleUp, mxResources.get('plusTooltip'));
   }
 
-  if (this.graph.codySuggestEnabled && this.graph.codyRightCb && this.isEventModelingDisabledOrCellInEventModel()) {
+  if (this.graph.isCodySuggestActive() && this.graph.codyRightCb && this.isEventModelingDisabledOrCellInEventModel()) {
     this.arrowRight = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'right');
   } else {
     this.arrowRight = this.createArrow(this.triangleRight, mxResources.get('plusTooltip'));
   }
 
-  if (this.graph.codySuggestEnabled && this.graph.codyDownCb && this.isEventModelingDisabledOrCellInEventModel()) {
+  if (this.graph.isCodySuggestActive() && this.graph.codyDownCb && this.isEventModelingDisabledOrCellInEventModel()) {
     this.arrowDown = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'down');
   } else {
     this.arrowDown = this.createArrow(this.triangleDown, mxResources.get('plusTooltip'));
   }
 
-  if (this.graph.codySuggestEnabled && this.graph.codyLeftCb && this.isEventModelingDisabledOrCellInEventModel()) {
+  if (this.graph.isCodySuggestActive() && this.graph.codyLeftCb && this.isEventModelingDisabledOrCellInEventModel()) {
     this.arrowLeft = this.createArrow(this.cody, mxResources.get('codyTooltip'), 'left');
   } else {
     this.arrowLeft = this.createArrow(this.triangleLeft, mxResources.get('plusTooltip'));
@@ -6184,20 +6215,22 @@ HoverIcons.prototype.refreshArrows = function () {
  */
 HoverIcons.prototype.init = function () {
   this.refreshArrows();
-  this.repaintHandler = mxUtils.bind(this, function () {
-    this.removeNodes();
+  this.repaintHandler = mxUtils.bind(this, function (fullRepaint) {
+    if(this.currentState && fullRepaint) {
+      const state = this.currentState;
+      this.reset();
+      this.update(state);
+      return;
+    }
+
+    this.reset();
     this.refreshArrows();
     this.repaint();
   });
 
-  this.graph.selectionModel.addListener(mxEvent.CHANGE, this.repaintHandler);
-  this.graph.model.addListener(mxEvent.CHANGE, this.repaintHandler);
   this.graph.view.addListener(mxEvent.SCALE_AND_TRANSLATE, this.repaintHandler);
   this.graph.view.addListener(mxEvent.TRANSLATE, this.repaintHandler);
   this.graph.view.addListener(mxEvent.SCALE, this.repaintHandler);
-  this.graph.view.addListener(mxEvent.DOWN, this.repaintHandler);
-  this.graph.view.addListener(mxEvent.UP, this.repaintHandler);
-  this.graph.addListener(mxEvent.ROOT, this.repaintHandler);
 
   // Resets the mouse point on escape
   this.graph.addListener(mxEvent.ESCAPE, mxUtils.bind(this, function () {
@@ -6354,7 +6387,7 @@ HoverIcons.prototype.createArrow = function (img, tooltip, codyDirection, addLan
 
   mxEvent.addGestureListeners(arrow, mxUtils.bind(this, function (evt) {
     if (this.currentState != null && !this.isResetEvent(evt)) {
-      if (codyDirection && !mxEvent.isControlDown(evt)) {
+      if (codyDirection) {
         // Fire CB after short wait time so that editor blur can happen before
         window.setTimeout(mxUtils.bind(this, function () {
           if (this.graph.connectionHandler.isConnecting()) {
@@ -6880,7 +6913,10 @@ HoverIcons.prototype.setCurrentState = function (state) {
     return;
   }
 
-  this.graph.updateCodySuggestions(state.cell);
+  if(this.graph.isCodySuggestActive()) {
+    this.graph.updateCodySuggestions(state.cell);
+  }
+
   this.refreshArrows();
 
   if (state.style['portConstraint'] != 'eastwest') {
@@ -9339,7 +9375,9 @@ if (typeof mxVertexHandler != 'undefined') {
             this.scrollTop = graph.container.scrollTop;
 
             if (this.currentLink == null && graph.container.style.overflow == 'auto') {
-              graph.container.style.cursor = 'move';
+              requestAnimationFrame(() => {
+                graph.container.style.cursor = 'move';
+              })
             }
 
             this.updateCurrentState(me);
@@ -9425,7 +9463,10 @@ if (typeof mxVertexHandler != 'undefined') {
             this.currentLink = graph.getAbsoluteUrl(graph.getLinkForCell(state.cell));
 
             if (this.currentLink != null) {
-              graph.container.style.cursor = 'pointer';
+              requestAnimationFrame(() => {
+                graph.container.style.cursor = 'pointer';
+              })
+
 
               if (this.highlight != null) {
                 this.highlight.highlight(state);
@@ -9434,7 +9475,10 @@ if (typeof mxVertexHandler != 'undefined') {
           },
           clear: function () {
             if (graph.container != null) {
-              graph.container.style.cursor = cursor;
+              requestAnimationFrame(() => {
+                graph.container.style.cursor = cursor;
+              })
+
             }
 
             this.currentState = null;
@@ -10223,13 +10267,17 @@ if (typeof mxVertexHandler != 'undefined') {
             me.state = this.view.getState(cell);
 
             if (me.state != null && me.state.shape != null) {
-              this.container.style.cursor = me.state.shape.node.style.cursor;
+              requestAnimationFrame(() => {
+                this.container.style.cursor = me.state.shape.node.style.cursor;
+              })
             }
           }
         }
 
         if (me.getState() == null && this.isEnabled()) {
-          this.container.style.cursor = 'default';
+          requestAnimationFrame(() => {
+            this.container.style.cursor = 'default';
+          })
         }
 
         return me;

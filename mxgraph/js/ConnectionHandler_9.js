@@ -405,7 +405,8 @@ mxConnectionHandler.prototype.mouseMove = function(sender, me)
             // Makes sure endpoint of edge is visible during connect
             if (this.cursor != null)
             {
-                this.graph.container.style.cursor = this.cursor;
+                // Deactivated as this causes expensive layout reflows
+                // this.graph.container.style.cursor = this.cursor;
             }
 
             mxEvent.consume(me.getEvent());

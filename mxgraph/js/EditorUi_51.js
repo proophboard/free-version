@@ -1144,6 +1144,9 @@ EditorUi.prototype.init = function()
 	{
 		this.onKeyPress(evt);
 	}));
+	mxEvent.addListener(graph.container, 'keyup', mxUtils.bind(this, function (evt) {
+		this.onKeyUp(evt);
+	}))
 
 	// Updates action states
 	this.addUndoListener();
@@ -1236,6 +1239,11 @@ EditorUi.prototype.onKeyDown = function(evt)
 {
 	var graph = this.editor.graph;
 
+	if(mxEvent.isControlDown(evt) && !graph.isCodySuggestActive()) {
+		graph.setCodySuggestActive(true);
+		this.hoverIcons.repaintHandler(true);
+	}
+
 	// Tab selects next cell
 	if (evt.which == 9 && graph.isEnabled() && !mxEvent.isAltDown(evt))
 	{
@@ -1318,6 +1326,15 @@ EditorUi.prototype.onKeyPress = function(evt)
 			sel.removeAllRanges();
 			sel.addRange(range);
 		}
+	}
+};
+
+EditorUi.prototype.onKeyUp = function (evt) {
+	var graph = this.editor.graph;
+
+	if(graph.isCodySuggestActive()) {
+		graph.setCodySuggestActive(false);
+		this.hoverIcons.repaintHandler(true);
 	}
 };
 
@@ -2443,6 +2460,7 @@ EditorUi.prototype.createTemporaryGraph = function(stylesheet)
 	graph.autoScroll = false;
 	graph.setTooltips(false);
 	graph.setEnabled(false);
+
 
 	// Container must be in the DOM for correct HTML rendering
 	graph.container.style.visibility = 'hidden';
