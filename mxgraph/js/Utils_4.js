@@ -7,6 +7,10 @@ mxUtils.hasScrollbars = function (node) {
 var orgGetOffset = mxUtils.getOffset;
 var cachedOffset;
 mxUtils.getOffset = function (container, scrollOffset) {
+    if(!container || typeof container.classList === 'undefined' || !container.classList.contains('geDiagramContainer')) {
+        return orgGetOffset(container, scrollOffset);
+    }
+
     if(!cachedOffset) {
         const offset = orgGetOffset(container, scrollOffset);
 
@@ -14,19 +18,12 @@ mxUtils.getOffset = function (container, scrollOffset) {
         cachedOffset = offset;
     }
 
-     return cachedOffset;
+    return cachedOffset;
 }
 
-var orgGetScrollOrigin = mxUtils.getScrollOrigin;
-var cachedScrollOrigin;
 mxUtils.getScrollOrigin = function (node, includeAncestors, includeDocument) {
-    if(!cachedScrollOrigin) {
-        cachedScrollOrigin = orgGetScrollOrigin(node, includeAncestors, includeDocument);
-    }
-
-    return cachedScrollOrigin;
+    return {x:0,y:0};
 }
-
 /**
  * UPDATED: Use whitspace: wrap and return div.scrollWidth when textWidth is passed to function
  *
