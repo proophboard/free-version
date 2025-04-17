@@ -2359,6 +2359,7 @@ EditorUi.prototype.initCanvas = function()
 			if(pinchStarted) {
 				pinchStarted = false;
 				startDist = 0;
+				lastDist = 0;
 			}
 		}));
 	}
