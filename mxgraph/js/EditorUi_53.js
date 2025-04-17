@@ -2314,9 +2314,14 @@ EditorUi.prototype.initCanvas = function()
 
 	let pinchStarted = false;
 	let startDist = 0;
-	// @TODO: not working :(
+	let lastDist = 0;
+
+	console.log("[mxUtils] is touch: ", mxClient.IS_TOUCH);
+
 	if (mxClient.IS_TOUCH)
 	{
+		console.log("[mxUtils] Installing touch event listeners");
+
 		graph.disableUserSelectOnContainer();
 
 		mxEvent.addListener(this.container, 'touchstart', mxUtils.bind(this, function(evt)
@@ -2340,7 +2345,9 @@ EditorUi.prototype.initCanvas = function()
 					evt.touches[0].pageY - evt.touches[1].pageY
 				);
 
-				graph.lazyZoom(currentDist > startDist, true);
+				graph.lazyZoom(currentDist > startDist && currentDist > lastDist, true);
+
+				lastDist = currentDist;
 
 				mxEvent.consume(evt);
 			}
