@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "https://free.prooph-board.com/precache-manifest.bef8d91673d65a11a6d59a3932f53fe2.js"
+  "https://free.prooph-board.com/precache-manifest.8692774692d8e65f06d3892573430843.js"
 );
 
 workbox.clientsClaim();
