@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "031b233cd7e00578048b",
+    "revision": "8f2faf88181051b44403",
     "url": "https://free.prooph-board.com/static/css/main.73c26778.chunk.css"
   },
   {
-    "revision": "031b233cd7e00578048b",
-    "url": "https://free.prooph-board.com/static/js/main.031b233c.chunk.js"
+    "revision": "8f2faf88181051b44403",
+    "url": "https://free.prooph-board.com/static/js/main.8f2faf88.chunk.js"
   },
   {
     "revision": "248d9d73b06fb29e5861",
@@ -36,12 +36,12 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/icons.faff9214.woff"
   },
   {
-    "revision": "b87b9ba532ace76ae9f6edfe9f72ded2",
-    "url": "https://free.prooph-board.com/static/media/icons.b87b9ba5.ttf"
-  },
-  {
     "revision": "701ae6abd4719e9c2ada3535a497b341",
     "url": "https://free.prooph-board.com/static/media/outline-icons.701ae6ab.eot"
+  },
+  {
+    "revision": "b87b9ba532ace76ae9f6edfe9f72ded2",
+    "url": "https://free.prooph-board.com/static/media/icons.b87b9ba5.ttf"
   },
   {
     "revision": "cd6c777f1945164224dee082abaea03a",
@@ -64,16 +64,16 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/brand-icons.13db00b7.eot"
   },
   {
-    "revision": "962a1bf31c081691065fe333d9fa8105",
-    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
+    "revision": "a046592bac8f2fd96e994733faf3858c",
+    "url": "https://free.prooph-board.com/static/media/brand-icons.a046592b.woff"
   },
   {
     "revision": "e8c322de9658cbeb8a774b6624167c2c",
     "url": "https://free.prooph-board.com/static/media/brand-icons.e8c322de.woff2"
   },
   {
-    "revision": "a046592bac8f2fd96e994733faf3858c",
-    "url": "https://free.prooph-board.com/static/media/brand-icons.a046592b.woff"
+    "revision": "962a1bf31c081691065fe333d9fa8105",
+    "url": "https://free.prooph-board.com/static/media/icons.962a1bf3.svg"
   },
   {
     "revision": "c5ebe0b32dc1b5cc449a76c4204d13bb",
@@ -88,7 +88,7 @@ self.__precacheManifest = [
     "url": "https://free.prooph-board.com/static/media/cody.63c5836d.svg"
   },
   {
-    "revision": "e4faff70f70beb53d6edffb9594a54e3",
+    "revision": "b1673064103722bf39a62bcd2728b9d0",
     "url": "https://free.prooph-board.com/index.html"
   }
 ];
