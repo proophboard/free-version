@@ -531,6 +531,14 @@ var inspectioUtils = {
                 if(sType === ispConst.TYPE_EXTERNAL_SYSTEM && tType === ispConst.TYPE_COMMAND) {
                     return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
                 }
+
+                if(sType === ispConst.TYPE_DOCUMENT && tType === ispConst.TYPE_POLICY) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_ICON && tType === ispConst.TYPE_DOCUMENT) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
+                }
             }
 
         }
