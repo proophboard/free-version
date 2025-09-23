@@ -1098,7 +1098,7 @@ Actions.prototype.init = function()
 			cells.forEach(cell => {
 				if(graph.getModel().isEdge(cell)) {
 					let cellStyle = cell.getStyle();
-					cellStyle = inspectioUtils.getEdgeStyle(cell.source, cell.target, cellStyle || graph.createCurrentEdgeStyle());
+					cellStyle = inspectioUtils.getEdgeStyle(graph, cell.source, cell.target, cellStyle || graph.createCurrentEdgeStyle());
 
 					graph.getModel().beginUpdate();
 

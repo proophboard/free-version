@@ -473,16 +473,16 @@ var inspectioUtils = {
         return  false;
     },
 
-    getEdgeStyle: function (source, target, style) {
+    getEdgeStyle: function (graph, source, target, style) {
         let sourceIsUI = false;
         let targetIsUI = false;
 
         if(typeof source !== "undefined" && typeof target !== "undefined") {
-            if(inspectioUtils.isUI(source) || (inspectioUtils.isTextField(source) && inspectioUtils.isUI(this.model.getParent(source)))) {
+            if(inspectioUtils.isUI(source) || ((inspectioUtils.isTextField(source) || inspectioUtils.isIcon(source)) && inspectioUtils.isUI(graph.model.getParent(source)))) {
                 sourceIsUI = true;
             }
 
-            if(inspectioUtils.isUI(target) || (inspectioUtils.isTextField(target) && inspectioUtils.isUI(this.model.getParent(target)))) {
+            if(inspectioUtils.isUI(target) || ((inspectioUtils.isTextField(target) || inspectioUtils.isIcon(target)) && inspectioUtils.isUI(graph.model.getParent(target)))) {
                 targetIsUI = true;
             }
 

@@ -7615,7 +7615,7 @@ if (typeof mxVertexHandler != 'undefined') {
       this.shape.isDashed = false;
 
       if(source && target) {
-        const style = inspectioUtils.getEdgeStyle(source, target, '');
+        const style = inspectioUtils.getEdgeStyle(this.graph, source, target, '');
 
         if(style.includes('strokeColor')) {
           style.split(";").forEach(p => {
@@ -7961,7 +7961,7 @@ if (typeof mxVertexHandler != 'undefined') {
 
     var mxInsertEdge = Graph.prototype.insertEdge;
     Graph.prototype.insertEdge = function (parent, id, value, source, target, style) {
-      return mxInsertEdge.call(this, parent, id, value, source, target, inspectioUtils.getEdgeStyle(source, target, style || this.createCurrentEdgeStyle()));
+      return mxInsertEdge.call(this, parent, id, value, source, target, inspectioUtils.getEdgeStyle(this, source, target, style || this.createCurrentEdgeStyle()));
     }
 
     /**
