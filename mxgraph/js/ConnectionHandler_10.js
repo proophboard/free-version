@@ -20,10 +20,6 @@ mxConnectionHandler.prototype.createShape = function()
     shape.init(this.graph.getView().getOverlayPane());
     mxEvent.redirectMouseEvents(shape.node, this.graph, null);
 
-    if(shape.node) {
-        shape.node.classList.add('ge-edge-connector');
-    }
-
     return shape;
 };
 
@@ -461,6 +457,18 @@ mxConnectionHandler.prototype.mouseMove = function(sender, me)
     {
         this.constraintHandler.reset();
     }
+};
+
+/**
+ * Function: drawPreview
+ *
+ * Redraws the preview edge using the color and width returned by
+ * <getEdgeColor> and <getEdgeWidth>.
+ */
+mxConnectionHandler.prototype.drawPreview = function()
+{
+    this.updatePreview(this.error == null, this.previous?.cell, this.currentState?.cell);
+    this.shape.redraw();
 };
 
 var mxConnectionHandlerInsertEdge = mxConnectionHandler.prototype.insertEdge;

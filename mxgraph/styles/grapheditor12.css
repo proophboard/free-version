@@ -801,10 +801,6 @@ html td.mxWindowTitle {
  	padding:4px;
 }
 
-.ge-edge-connector path {
-	stroke-width: 2;
-}
-
 .ge-selected-edge path {
 	stroke-dasharray: 10 6;
 	stroke-width: 2;

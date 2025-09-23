@@ -3744,7 +3744,7 @@ Graph.prototype.connectVertex = function (source, direction, length, evt, forceC
     }
 
     var edge = ((mxEvent.isControlDown(evt) && duplicate) || (target == null && layout != null && layout.constructor == mxStackLayout)) ? null :
-      this.insertEdge(this.model.getParent(source), null, '', source, realTarget, this.createCurrentEdgeStyle());
+      this.insertEdge(this.model.getParent(source), null, '', source, realTarget, this.createCurrentEdgeStyle(this.model.getParent(source), source, realTarget));
 
     // Inserts edge before source
     if (edge != null && this.connectionHandler.insertBeforeSource) {
@@ -7608,8 +7608,27 @@ if (typeof mxVertexHandler != 'undefined') {
     }
 
     // Overrides live preview to keep current style
-    mxConnectionHandler.prototype.updatePreview = function (valid) {
-      // do not change color of preview
+    mxConnectionHandler.prototype.updatePreview = function (valid, source, target) {
+      this.shape.strokewidth = 4;
+      this.shape.scale = 1;
+      this.shape.stroke = '#858585';
+      this.shape.isDashed = false;
+
+      if(source && target) {
+        const style = inspectioUtils.getEdgeStyle(source, target, '');
+
+        if(style.includes('strokeColor')) {
+          style.split(";").forEach(p => {
+            if(p.includes('strokeColor')) {
+              this.shape.stroke = p.split('=')[1];
+            }
+          })
+        }
+
+        if(style.includes('dashed=1')) {
+          this.shape.isDashed = true;
+        }
+      }
     };
 
     // Overrides connection handler to ignore edges instead of not allowing connections
@@ -7942,7 +7961,7 @@ if (typeof mxVertexHandler != 'undefined') {
 
     var mxInsertEdge = Graph.prototype.insertEdge;
     Graph.prototype.insertEdge = function (parent, id, value, source, target, style) {
-      return mxInsertEdge.call(this, parent, id, value, source, target, style || this.createCurrentEdgeStyle());
+      return mxInsertEdge.call(this, parent, id, value, source, target, inspectioUtils.getEdgeStyle(source, target, style || this.createCurrentEdgeStyle()));
     }
 
     /**

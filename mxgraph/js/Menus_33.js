@@ -1281,6 +1281,12 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				hasWaypoints = geo != null && geo.points != null && geo.points.length > 0;
 			}
 
+			if(graph.getSelectionCount() > 1) {
+				this.addMenuItem(menu, 'highlight_information_flow', null, evt, null, 'Highlight Flow');
+			} else if (graph.getSelectionCount() === 1 && graph.getModel().isEdge(cell)) {
+				this.addMenuItem(menu, 'highlight_information_flow', null, evt, null, 'Highlight Flow');
+			}
+
 			if (graph.getSelectionCount() == 1 && (hasWaypoints || (graph.getModel().isVertex(cell) &&
 				graph.getModel().getEdgeCount(cell) > 0)))
 			{

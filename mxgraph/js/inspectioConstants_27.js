@@ -80,7 +80,7 @@ var ispConst = {
     ZOOM_MODE_ALL_ELES : 'allEles',
 
     //Style
-    THEME : 'material19',
+    THEME : 'material20',
 
     PROCESS_BORDER_COLOR : '#919191',
 

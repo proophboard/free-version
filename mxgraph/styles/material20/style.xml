@@ -30,7 +30,7 @@
         <add as="rounded" value="1"/>
         <add as="jettySize" value="auto"/>
         <add as="orthogonalLoop" value="1"/>
-        <add as="strokeWidth" value="2"/>
+        <add as="strokeWidth" value="4"/>
         <add as="strokeColor" value="#858585"/>
         <add as="labelBackgroundColor" value="none"/>
         <add as="endArrow" value="open"/>
@@ -242,7 +242,7 @@
     <add as="feature">
         <add as="spacingTop" value="20"/>
         <add as="connectable" value="0"/>
-        <add as="fillColor" value="#cfcfcf"/>
+        <add as="fillColor" value="#E3E3E3"/>
         <add as="fillOpacity" value="40"/>
         <add as="container" value="1"/>
         <add as="labelPosition" value="center"/>

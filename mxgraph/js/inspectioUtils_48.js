@@ -368,6 +368,12 @@ var inspectioUtils = {
         return this.STICKY_TYPES.includes(cellType);
     },
 
+    isUI: function (cell) {
+        var cellType = inspectioUtils.getType(cell);
+
+        return [ispConst.TYPE_UI, ispConst.TYPE_IMAGE].includes(cellType);
+    },
+
     isOfType: function (cell, type) {
         if(cell === null || typeof cell === 'undefined') {
             return false;
@@ -465,6 +471,71 @@ var inspectioUtils = {
         }
 
         return  false;
+    },
+
+    getEdgeStyle: function (source, target, style) {
+        let sourceIsUI = false;
+        let targetIsUI = false;
+
+        if(typeof source !== "undefined" && typeof target !== "undefined") {
+            if(inspectioUtils.isUI(source) || (inspectioUtils.isTextField(source) && inspectioUtils.isUI(this.model.getParent(source)))) {
+                sourceIsUI = true;
+            }
+
+            if(inspectioUtils.isUI(target) || (inspectioUtils.isTextField(target) && inspectioUtils.isUI(this.model.getParent(target)))) {
+                targetIsUI = true;
+            }
+
+            if(sourceIsUI && targetIsUI) {
+                return mxUtils.setStyle(style, 'dashed', '1');
+            } else if (sourceIsUI) {
+                const targetType = inspectioUtils.getType(target);
+
+                if(targetType === ispConst.TYPE_COMMAND) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.COMMAND_COLOR);
+                }
+            } else if (targetIsUI) {
+                const sourceType = inspectioUtils.getType(source);
+
+                if(sourceType === ispConst.TYPE_DOCUMENT) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
+                }
+            } else {
+                const sType = inspectioUtils.getType(source);
+                const tType = inspectioUtils.getType(target);
+
+                if(sType === ispConst.TYPE_COMMAND && tType === ispConst.TYPE_EVENT) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.COMMAND_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_COMMAND && tType === ispConst.TYPE_EXTERNAL_SYSTEM) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.COMMAND_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_EVENT && tType === ispConst.TYPE_DOCUMENT) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.EVENT_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_EVENT && tType === ispConst.TYPE_POLICY) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.EVENT_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_POLICY && tType === ispConst.TYPE_COMMAND) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.COMMAND_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_DOCUMENT && tType === ispConst.TYPE_COMMAND) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
+                }
+
+                if(sType === ispConst.TYPE_EXTERNAL_SYSTEM && tType === ispConst.TYPE_COMMAND) {
+                    return  mxUtils.setStyle(style, 'strokeColor', ispConst.DOCUMENT_COLOR);
+                }
+            }
+
+        }
+
+        return style;
     },
 
     getLabelText: function (cell) {

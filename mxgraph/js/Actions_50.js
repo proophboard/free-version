@@ -1089,6 +1089,29 @@ Actions.prototype.init = function()
 		}
 	})
 
+	this.addAction('highlight_information_flow', function () {
+		const cells = graph.getSelectionCells();
+
+		debugger;
+
+		if(Array.isArray(cells)) {
+			cells.forEach(cell => {
+				if(graph.getModel().isEdge(cell)) {
+					let cellStyle = cell.getStyle();
+					cellStyle = inspectioUtils.getEdgeStyle(cell.source, cell.target, cellStyle || graph.createCurrentEdgeStyle());
+
+					graph.getModel().beginUpdate();
+
+					try {
+						graph.getModel().setStyle(cell, cellStyle);
+					} finally {
+						graph.getModel().endUpdate();
+					}
+				}
+			})
+		}
+	})
+
 	this.addAction('align_horizontal_center', function() {
 		const cells = graph.getSelectionCells();
 
