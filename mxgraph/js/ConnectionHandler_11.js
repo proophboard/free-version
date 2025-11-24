@@ -495,6 +495,8 @@ mxConnectionHandler.prototype.connect = function (source, target, evt, dropTarge
     }
     mxConnectionHandlerConnect.call(this, source, target, evt, dropTarget);
 
+    this.graph.moveToLayer([this.lastInsertedEdge], this.graph.getActiveLayer().getId());
+
     if(this.graph.considerDirectionOnConnect && this.lastInsertedEdge) {
         this.graph.getModel().beginUpdate();
 

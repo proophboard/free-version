@@ -931,6 +931,14 @@ var inspectioUtils = {
         return tags;
     },
 
+    isLayer: function (cell, graph) {
+      if(!cell) {
+          return false;
+      }
+
+      return graph.model.getChildren(graph.model.getRoot()).includes(cell);
+    },
+
     setLayer: function (cell, layerId, graph) {
         graph.setAttributeForCell(cell, ispConst.LAYER_ATTR, layerId);
     },
@@ -955,10 +963,6 @@ var inspectioUtils = {
         const defaultId = graph.getDefaultParent().getId();
 
         if(cell === null || typeof cell === 'undefined') {
-            return defaultId;
-        }
-
-        if(!cell.isVertex()) {
             return defaultId;
         }
 

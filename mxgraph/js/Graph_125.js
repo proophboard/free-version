@@ -1044,7 +1044,7 @@ mxEvent.isLeftMouseButton = function (evt) {
 
       this.showLayer(layer);
 
-      if(!currentLayer) {
+      if(triggerChangeListener && !currentLayer) {
         this.activeLayerChanged(layer);
         return;
       }
@@ -2005,6 +2005,15 @@ mxEvent.isLeftMouseButton = function (evt) {
 
           const checkCell = cell => {
             if (inspectioUtils.isEventModel(cell) || inspectioUtils.isEventModelHandle(cell)) {
+              if(inspectioUtils.isEventModel(cell) && !this.isDefaultParentActiveLayer()) {
+                const emChildren = [];
+                this.flattenChildren(emChildren, cell);
+                this.effectRunning++;
+                this.fadeOutCells(emChildren, () => {
+                  this.effectRunning--;
+                })
+              }
+
               return;
             }
 
@@ -8291,13 +8300,144 @@ if (typeof mxVertexHandler != 'undefined') {
       return mxGraphRemoveCells.call(this, cells, includeEdges);
     }
 
+    mxGraph.prototype.moveToLayer = function (cells, layerId) {
+      if(cells) {
+        cells.forEach(cell => {
+          if(inspectioUtils.isContainer(cell)) {
+            inspectioUtils.setLayer(cell, null, this);
+          } else {
+            inspectioUtils.setLayer(cell, layerId, this);
+          }
+
+          let children = this.model.getChildren(cell);
+
+          if(inspectioUtils.isEventModel(cell)) {
+            children = children.filter(child => !inspectioUtils.isEventModelHandle(child) && (!child.isEdge() || !inspectioUtils.isEventModelHandle(child.getTerminal(true))));
+          }
+
+          this.moveToLayer(children, layerId);
+        })
+      }
+    }
+
+    /**
+     * Function: cellsAdded
+     *
+     * Adds the specified cells to the given parent. This method fires
+     * <mxEvent.CELLS_ADDED> while the transaction is in progress.
+     */
+    mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, absolute, constrain, extend)
+    {
+      if (cells != null && parent != null && index != null)
+      {
+        this.model.beginUpdate();
+        try
+        {
+          var parentState = (absolute) ? this.view.getState(parent) : null;
+          var o1 = (parentState != null) ? parentState.origin : null;
+          var zero = new mxPoint(0, 0);
+
+          for (var i = 0; i < cells.length; i++)
+          {
+            if (cells[i] == null)
+            {
+              index--;
+            }
+            else
+            {
+              var previous = this.model.getParent(cells[i]);
+
+              // Containers are always added to the default layer
+              if(inspectioUtils.isContainer(cells[i]) && inspectioUtils.isLayer(parent, this)) {
+                parent = this.getDefaultParent();
+              }
+
+              // Keeps the cell at its absolute location
+              if (o1 != null && cells[i] != parent && parent != previous)
+              {
+                var oldState = this.view.getState(previous);
+                var o2 = (oldState != null) ? oldState.origin : zero;
+                var geo = this.model.getGeometry(cells[i]);
+
+                if (geo != null)
+                {
+                  var dx = o2.x - o1.x;
+                  var dy = o2.y - o1.y;
+
+                  // FIXME: Cells should always be inserted first before any other edit
+                  // to avoid forward references in sessions.
+                  geo = geo.clone();
+                  geo.translate(dx, dy);
+
+                  if (!geo.relative && this.model.isVertex(cells[i]) &&
+                    !this.isAllowNegativeCoordinates())
+                  {
+                    geo.x = Math.max(0, geo.x);
+                    geo.y = Math.max(0, geo.y);
+                  }
+
+                  this.model.setGeometry(cells[i], geo);
+                }
+              }
+
+              // Decrements all following indices
+              // if cell is already in parent
+              if (parent == previous && index + i > this.model.getChildCount(parent))
+              {
+                index--;
+              }
+
+              this.model.add(parent, cells[i], index + i);
+
+              if (this.autoSizeCellsOnAdd)
+              {
+                this.autoSizeCell(cells[i], true);
+              }
+
+              // Extends the parent or constrains the child
+              if ((extend == null || extend) &&
+                this.isExtendParentsOnAdd(cells[i]) && this.isExtendParent(cells[i]))
+              {
+                this.extendParent(cells[i]);
+              }
+
+              // Additionally constrains the child after extending the parent
+              if (constrain == null || constrain)
+              {
+                this.constrainChild(cells[i]);
+              }
+
+              // Sets the source terminal
+              if (source != null)
+              {
+                this.cellConnected(cells[i], source, true);
+              }
+
+              // Sets the target terminal
+              if (target != null)
+              {
+                this.cellConnected(cells[i], target, false);
+              }
+            }
+          }
+
+          this.fireEvent(new mxEventObject(mxEvent.CELLS_ADDED, 'cells', cells,
+            'parent', parent, 'index', index, 'source', source, 'target', target,
+            'absolute', absolute));
+        }
+        finally
+        {
+          this.model.endUpdate();
+        }
+      }
+    };
+
     mxGraph.prototype.importCells = function (cells, dx, dy, target, evt, mapping) {
       if(!target) {
         target = this.getActiveLayer();
-        if(!this.isDefaultParentActiveLayer()) {
-          cells.forEach(c => inspectioUtils.setLayer(c, target.getId(), this));
-        }
       }
+
+      this.moveToLayer(cells, this.getActiveLayer().getId());
 
       var importedCells = this.moveCells(cells, dx, dy, true, target, evt, mapping);
 
@@ -8598,7 +8738,9 @@ if (typeof mxVertexHandler != 'undefined') {
 
       if (cells.length === 1) {
         if (inspectioUtils.isDrawingShape(cells[0])) {
-          return true;
+          const cellLayer = inspectioUtils.getLayer(cell, this);
+
+          return cellLayer === this.getActiveLayer().getId();
         }
       }
 

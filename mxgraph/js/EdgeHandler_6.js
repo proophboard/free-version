@@ -154,6 +154,15 @@ mxEdgeHandler.prototype.mouseMove = function(sender, me)
     }
 };
 
+mxEdgeHandlerMouseUp = mxEdgeHandler.prototype.mouseUp;
+mxEdgeHandler.prototype.mouseUp = function(sender, me) {
+    if (this.index != null && this.marker != null)
+    {
+        this.graph.moveToLayer([this.state.cell], this.graph.getActiveLayer().getId());
+        mxEdgeHandlerMouseUp.call(this, sender, me);
+    }
+}
+
 mxEdgeHandler.prototype.redraw = function()
 {
     this.abspoints = this.state.absolutePoints.slice();
