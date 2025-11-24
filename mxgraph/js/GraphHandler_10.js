@@ -121,6 +121,40 @@ mxGraphHandler.prototype.isSchemaMergeTarget = function (sourceCell, targetCell)
     return sourceCell.getId() !== targetCell.getId();
 }
 
+mxGraphHandler.prototype.moveCells = function(cells, dx, dy, clone, target, evt)
+{
+    if (clone)
+    {
+        cells = this.graph.getCloneableCells(cells);
+    }
+
+    // Removes cells from parent
+    if (target == null && this.isRemoveCellsFromParent() &&
+      this.shouldRemoveCellsFromParent(this.graph.getModel().getParent(this.cell), cells, evt))
+    {
+        target = this.graph.getActiveLayer();
+    }
+
+    // Cloning into locked cells is not allowed
+    clone = clone && !this.graph.isCellLocked(target || this.graph.getDefaultParent());
+
+    // Passes all selected cells in order to correctly clone or move into
+    // the target cell. The method checks for each cell if its movable.
+    cells = this.graph.moveCells(cells, dx - this.graph.panDx / this.graph.view.scale,
+      dy - this.graph.panDy / this.graph.view.scale, clone, target, evt);
+
+    if (this.isSelectEnabled() && this.scrollOnMove)
+    {
+        this.graph.scrollCellToVisible(cells[0]);
+    }
+
+    // Selects the new cells if cells have been cloned
+    if (clone)
+    {
+        this.graph.setSelectionCells(cells);
+    }
+};
+
 mxGraphHandlerMouseUp = mxGraphHandler.prototype.mouseUp;
 mxGraphHandler.prototype.mouseUp = function (sender, me) {
     if(this.target && inspectioUtils.isContainer(this.target)) {

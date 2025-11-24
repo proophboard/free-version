@@ -204,9 +204,9 @@ mxGraphModel.prototype.endUpdateWithoutChangeNotifications = function () {
   }
 };
 
-const mxGraphModelGetChildren = mxGraphModel.prototype.getChildren;
+const mxGraphModelForGraphGetChildren = mxGraphModel.prototype.getChildren;
 mxGraphModel.prototype.getChildrenOrEmptyArr = function (cell) {
-  const result = mxGraphModelGetChildren.call(this, cell);
+  const result = mxGraphModelForGraphGetChildren.call(this, cell);
 
   if (!result) {
     return []
@@ -257,8 +257,14 @@ mxGraphModel.prototype.parentForCellChanged = function (cell, parent, index) {
     if (parent != previous || previous.getIndex(cell) != index) {
       parent.insert(cell, index);
 
-      if(inspectioUtils.isContainer(parent) && inspectioUtils.hasAlternateStyle(parent) && this.graph) {
-        this.graph.fadeOutCells([cell]);
+      if(inspectioUtils.isContainer(parent) && this.graph) {
+        if(inspectioUtils.hasAlternateStyle(parent)) {
+          this.graph.fadeOutCells([cell]);
+        }
+
+        if(!this.graph.isDefaultParentActiveLayer() && !inspectioUtils.isOnLayer(cell)) {
+          inspectioUtils.setLayer(cell, this.graph.getActiveLayer().getId(), this.graph);
+        }
       }
     }
   } else if (previous != null) {
@@ -374,10 +380,14 @@ mxEvent.isLeftMouseButton = function (evt) {
     this.lookupElementListener = null;
     this.showMetadataListener = null;
     this.triggerCodyListener = null;
+    this.activeLayerChangedListener = null;
     this.cockpitBaseUrl = null;
     this.liteMode = false;
     this.panningListeners = [];
     this.zoomListeners = [];
+
+    // Active Layer
+    this.activeLayer = null;
 
     this.tickQueue = [];
     this.scheduledTasks = 0;
@@ -1001,6 +1011,128 @@ mxEvent.isLeftMouseButton = function (evt) {
       this.view.translate = orgTranslate;
     }
 
+    this.onActiveLayerChanged = function (listener) {
+      this.activeLayerChangedListener = listener;
+    }
+
+    this.activeLayerChanged = function (layer) {
+      if(this.activeLayerChangedListener) {
+        this.activeLayerChangedListener(layer);
+      }
+    }
+
+    this.isDefaultParentActiveLayer = function () {
+      return this.getActiveLayer().getId() === this.getDefaultParent().getId();
+    }
+
+    this.getLayers = function () {
+      return this.model.getChildren(this.model.getRoot());
+    }
+
+    this.setActiveLayer = function (layer, triggerChangeListener) {
+      const currentLayer = this.activeLayer;
+
+      this.activeLayer = layer;
+
+      if(!this.activeLayer) {
+        layer = this.getDefaultParent();
+      }
+
+      const otherLayers = this.getLayers().filter(l => l.getId() !== layer.getId());
+
+      otherLayers.forEach(l => this.hideLayer(l));
+
+      this.showLayer(layer);
+
+      if(!currentLayer) {
+        this.activeLayerChanged(layer);
+        return;
+      }
+
+      if(triggerChangeListener && currentLayer.getId() !== layer.getId()) {
+        this.activeLayerChanged(layer);
+      }
+    }
+
+    this.getActiveLayer = function () {
+      if(!this.activeLayer) {
+        return this.getDefaultParent();
+      }
+
+      return this.activeLayer;
+    }
+
+    this.showLayer = function (layer) {
+      const children = this.getAllLayerChildren(layer)
+        .filter(child => {
+          const parent = this.model.getParent(child);
+
+          if(inspectioUtils.isContainer(parent) && this.hasAlternateStyle(parent)) {
+            return false;
+          }
+
+          return true;
+        });
+
+
+
+      this.effectRunning++;
+      this.fadeInCells(children, () => {
+        this.effectRunning--;
+      });
+    }
+
+    this.hideLayer = function (layer) {
+      const children = this.getAllLayerChildren(layer);
+
+      this.effectRunning++;
+      this.fadeOutCells(children, () => {
+        this.effectRunning--;
+      })
+    }
+
+    this.getAllLayerChildren = function (layer) {
+      const allChildren = [];
+
+      this.flattenChildren(allChildren, this.getDefaultParent());
+
+      const layerChildren = allChildren.filter(child => {
+        // Container stay visible
+        if(inspectioUtils.isContainer(child)) {
+          return false;
+        }
+
+        const childLayerId = inspectioUtils.getLayer(child, this);
+
+        return childLayerId === layer.getId();
+      })
+
+
+      const directLayerChildren = this.model.getChildren(layer);
+
+      if(directLayerChildren) {
+        directLayerChildren
+          .filter(c => !inspectioUtils.isContainer(c))
+          .forEach(c => layerChildren.push(c));
+      }
+
+      return layerChildren;
+    }
+
+    this.removeAllLayerChildren = function (layer) {
+      const children = this.getAllLayerChildren(layer);
+
+      this.model.beginUpdate();
+
+      try {
+        this.removeCells(children, true);
+      } finally {
+        this.model.endUpdate();
+      }
+
+    }
+
+
     // Adds support for HTML labels via style. Note: Currently, only the Java
     // backend supports HTML labels but CSS support is limited to the following:
     // http://docs.oracle.com/javase/6/docs/api/index.html?javax/swing/text/html/CSS.html
@@ -1366,7 +1498,7 @@ mxEvent.isLeftMouseButton = function (evt) {
       var mxGraphClick = this.click;
       this.click = function (me) {
         if (me.state && me.state.cell) {
-          if (inspectioUtils.moveOnBoundsOnly(me.state.cell)) {
+          if (inspectioUtils.moveOnBoundsOnly(me.state.cell) && !mxEvent.isControlDown(me.getEvent())) {
             if (!inspectioUtils.isMouseNearCellBounds(me, this.translateBounds(this.view.getState(me.state.cell)))) {
               me.state = null;
             } else {
@@ -1652,10 +1784,26 @@ mxEvent.isLeftMouseButton = function (evt) {
       // Changes rubberband selection to be recursive
       this.selectRegion = function (rect, evt) {
         var cells = this.getAllCells(rect.x, rect.y, rect.width, rect.height);
-        this.selectCellsForEvent(cells, evt);
+        this.selectCellsForEvent(this.filterActiveLayerCells(cells), evt);
 
         return cells;
       };
+
+      this.filterActiveLayerCells = function (cells) {
+        if(!cells) {
+          return cells;
+        }
+
+        const activeLayerId = this.getActiveLayer().getId();
+
+        return cells.filter(cell => {
+          if(inspectioUtils.isContainer(cell)) {
+            return true;
+          }
+
+          return inspectioUtils.getLayer(cell, this) === activeLayerId;
+        })
+      }
 
       this.getAllCellsIncludingLocked = function (x, y, width, height) {
         return this.getAllCells(x, y, width, height, undefined, undefined, true);
@@ -1856,7 +2004,6 @@ mxEvent.isLeftMouseButton = function (evt) {
           let cellIndex = 0;
 
           const checkCell = cell => {
-
             if (inspectioUtils.isEventModel(cell) || inspectioUtils.isEventModelHandle(cell)) {
               return;
             }
@@ -3092,6 +3239,11 @@ Graph.prototype.getMovableCellFromEvent = function (me) {
   return false;
 };
 
+// Disable Edge Split, we don't need it and within swim lanes it causes errors
+Graph.prototype.isSplitEnabled = function () {
+  return false;
+}
+
 /**
  * Adds support for placeholders in labels.
  */
@@ -3927,11 +4079,15 @@ Graph.prototype.isMoveCellsEvent = function (evt) {
 };
 
 Graph.prototype.fadeInCells = function (cells, cb) {
+  const activeLayerId = this.getActiveLayer().getId();
+  cells = cells.filter(cell => inspectioUtils.isContainer(cell) || inspectioUtils.getLayer(cell, this) === activeLayerId);
+
   this.setCellDisplay(cells, '');
 
   const states = cells.map(cell => this.view.getState(cell));
 
   cells.forEach((cell) => {
+    cell.tempVisible = true;
     if (!inspectioUtils.isContainer(cell) && cell.children) {
       cell.children.forEach((child) => {
         states.push(this.view.getState(child));
@@ -4058,22 +4214,42 @@ Graph.prototype.hideChildren = function (cell, recursive) {
   }
 }
 
+Graph.prototype.hideNonActiveLayerChildren = function (cell) {
+  if (typeof recursive === "undefined") {
+    recursive = false;
+  }
+
+  if (cell.children && cell.children.length > 0) {
+    const activeLayerId = this.getActiveLayer().getId();
+    const nonActiveLayerChildren = cell.children.filter(c => !inspectioUtils.isContainer(c) && inspectioUtils.getLayer(c, this) !== activeLayerId);
+
+    this.setCellDisplay(nonActiveLayerChildren, 'none');
+  }
+}
+
 Graph.prototype.hideChildrenAfterStyleChange = function (cell) {
   if (inspectioUtils.isBoundedContext(cell)) {
     if (this.hasAlternateStyle(cell)) {
       this.hideChildren(cell, true);
     } else {
+      this.hideNonActiveLayerChildren(cell);
       if (cell.children && cell.children.length > 0) {
         cell.children.forEach(mxUtils.bind(this, function (child) {
-          if (inspectioUtils.isFeature(child) && this.hasAlternateStyle(child)) {
-            this.hideChildren(child, false);
+          if (inspectioUtils.isFeature(child)) {
+            if(this.hasAlternateStyle(child)) {
+              this.hideChildren(child, false);
+            } else {
+              this.hideNonActiveLayerChildren(child);
+            }
           }
         }))
       }
     }
-  } else {
+  } else if (inspectioUtils.isFeature(cell)) {
     if (this.hasAlternateStyle(cell)) {
       this.hideChildren(cell, false);
+    } else {
+      this.hideNonActiveLayerChildren(cell);
     }
   }
 }
@@ -8116,6 +8292,13 @@ if (typeof mxVertexHandler != 'undefined') {
     }
 
     mxGraph.prototype.importCells = function (cells, dx, dy, target, evt, mapping) {
+      if(!target) {
+        target = this.getActiveLayer();
+        if(!this.isDefaultParentActiveLayer()) {
+          cells.forEach(c => inspectioUtils.setLayer(c, target.getId(), this));
+        }
+      }
+
       var importedCells = this.moveCells(cells, dx, dy, true, target, evt, mapping);
 
       // Connect cells on one of the next ticks to avoid conflicts in changeset detection
@@ -8252,9 +8435,9 @@ if (typeof mxVertexHandler != 'undefined') {
         this.model.beginUpdate();
         try {
           // Merges into unlocked current layer if one layer is pasted
-          if (layers.length == 1 && !this.isCellLocked(this.getDefaultParent())) {
+          if (layers.length == 1 && !this.isCellLocked(this.getActiveLayer())) {
             cells = this.moveCells(tempModel.getChildren(layers[0]),
-              dx, dy, false, this.getDefaultParent());
+              dx, dy, false, this.getActiveLayer());
           } else {
             var containsDefaultParent = false;
 
@@ -10657,6 +10840,14 @@ if (typeof mxVertexHandler != 'undefined') {
 
         if(this.liteMode && cells.length === 1) {
           this.showAllParentDetails(cells[0]);
+        }
+
+        if(cells.length === 1) {
+          const layerId = inspectioUtils.getLayer(cells[0], this);
+
+          if(this.getActiveLayer().getId() !== layerId) {
+            this.setActiveLayer(this.model.getCell(layerId), true);
+          }
         }
 
         if (highlight) {

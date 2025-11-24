@@ -154,7 +154,7 @@ Actions.prototype.init = function()
 	this.addAction('copy', function() { mxClipboard.copy(graph); }, null, 'sprite-copy', Editor.ctrlKey + '+C');
 	this.addAction('paste', function()
 	{
-		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
+		if (graph.isEnabled() && !graph.isCellLocked(graph.getActiveLayer()))
 		{
 			mxClipboard.paste(graph);
 		}
@@ -163,7 +163,7 @@ Actions.prototype.init = function()
 	{
 		var targetContainer = graph.getSelectionCell();
 
-		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
+		if (graph.isEnabled() && !graph.isCellLocked(graph.getActiveLayer()))
 		{
 			mxClipboard.paste(graph, undefined, undefined, true).then(cells => {
 				graph.getModel().beginUpdate();
@@ -224,7 +224,7 @@ Actions.prototype.init = function()
 	{
 		var targetContainer = graph.getSelectionCell();
 
-		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
+		if (graph.isEnabled() && !graph.isCellLocked(graph.getActiveLayer()))
 		{
 			mxClipboard.paste(graph, undefined, undefined, true).then(cells => {
 				graph.getModel().beginUpdate();

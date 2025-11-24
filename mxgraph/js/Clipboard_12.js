@@ -102,6 +102,13 @@ mxClipboard.setCellsInMemoryOnly = function (cells) {
 mxClipboard.importCells = function(cells, graph, intoDefaultParent) {
     cells = graph.getImportableCells(cells);
 
+    if(cells) {
+        cells.forEach(cell => {
+            inspectioUtils.setLayer(cell, null, graph);
+        })
+    }
+
+
     var deltaX = mxClipboard.insertCount * mxClipboard.STEPSIZE;
     var deltaY = mxClipboard.insertCount * mxClipboard.STEPSIZE;
 
@@ -127,10 +134,6 @@ mxClipboard.importCells = function(cells, graph, intoDefaultParent) {
         if (targetContainer) {
             parent = targetContainer;
         }
-    }
-
-    if (!parent) {
-        parent = graph.getDefaultParent();
     }
 
     cells = graph.importCells(cells, deltaX, deltaY, parent);

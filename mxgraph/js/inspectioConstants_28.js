@@ -36,6 +36,7 @@ var ispConst = {
     TYPE_IFRAME_THUMB : 'iframeThumb',
 
     TAGS_ATTR : 'tags',
+    LAYER_ATTR : 'layer',
 
     TAG_IMPORTANT : 'important',
     TAG_PLANNED : 'planned',

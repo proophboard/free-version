@@ -347,7 +347,12 @@ var inspectioUtils = {
     },
 
     isChild: function (cell) {
-        return cell.parent.getId() !== MXGRAPH_ROOT_UUIDS[0];
+        if(cell.parent && cell.parent.parent) {
+            // If parent is a Layer the parent of the Layer should be the root
+            return cell.parent.parent.getId() !== MXGRAPH_ROOT_UUIDS[1];
+        }
+
+        return false;
     },
 
     canBeChildOf: function (containerType, cell) {
@@ -924,6 +929,48 @@ var inspectioUtils = {
         }
 
         return tags;
+    },
+
+    setLayer: function (cell, layerId, graph) {
+        graph.setAttributeForCell(cell, ispConst.LAYER_ATTR, layerId);
+    },
+
+    isOnLayer: function (cell) {
+        if(cell === null || typeof cell === 'undefined') {
+            return false;
+        }
+
+        if(!cell.isVertex()) {
+            return false;
+        }
+
+        if(!mxUtils.isNode(cell.getValue())) {
+            return false;
+        }
+
+        return cell.getValue().hasAttribute(ispConst.LAYER_ATTR);
+    },
+
+    getLayer: function (cell, graph) {
+        const defaultId = graph.getDefaultParent().getId();
+
+        if(cell === null || typeof cell === 'undefined') {
+            return defaultId;
+        }
+
+        if(!cell.isVertex()) {
+            return defaultId;
+        }
+
+        if(!mxUtils.isNode(cell.getValue())) {
+            return defaultId;
+        }
+
+        if(!cell.getValue().hasAttribute(ispConst.LAYER_ATTR)) {
+            return defaultId;
+        }
+
+        return cell.getValue().getAttribute(ispConst.LAYER_ATTR);
     },
 
     require: function (file, cb) {
