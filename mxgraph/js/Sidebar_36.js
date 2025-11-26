@@ -1420,9 +1420,17 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 							//Determine position of mouse relative to scaled and transformed canvas
 							var mousePoint = graph.translateMousePoint(x, y);
 
+							// Cloning does not change the id!
+							// The id is changed by graph.model only in case of a collision,
+							// But that's too late. We want to always drop unique elements
+							// to avoid content conflicts!
+							cells = graph.cloneCells(cells);
+							cells.forEach(cell => {
+								cell.setId(graph.model.createId(cell));
+							})
+
 							// Used in prooph board graph.makeDraggable to reset x,y of copied Node
 							if(resetGeo) {
-								cells = graph.cloneCells(cells);
 								cells.forEach(cell => {
 									cell.setGeometry(new mxGeometry(bounds.x, bounds.y, bounds.width, bounds.height));
 								})
